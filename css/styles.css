@@ -1,0 +1,75 @@
+/* Estilos personalizados sutiles para El Vagón del Café (SPA - V3) */
+body {
+    /* Dejamos que Tailwind maneje los colores de fondo y texto con bg-brand-bg y text-brand-dark */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ocultar scrollbar pero permitir scroll fluido */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #E5E1D8; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #C5A059; }
+
+/* SPA Display Logic */
+.app-section {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
+.app-section.active-section {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Clase para el enlace activo en el menú (Navegación Desktop) */
+.nav-tab.active, .mobile-nav-tab.active {
+    color: #1A4331 !important;
+    font-weight: 700;
+    position: relative;
+}
+.nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #C5A059;
+    border-radius: 2px;
+}
+
+/* Transiciones para los acordeones de la Escuela del Café */
+.method-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out;
+    opacity: 0;
+}
+.method-content.open {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 1rem;
+}
+
+/* Estilos de respuesta visual para el Formulario de Contacto */
+.form-status-msg {
+    display: none;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+.form-status-msg.success {
+    background-color: #E8F0EC;
+    color: #1A4331;
+    border: 1px solid rgba(26, 67, 49, 0.2);
+}
+.form-status-msg.error {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid rgba(153, 27, 27, 0.2);
+}

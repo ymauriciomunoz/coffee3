@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Descubre El Vagón del Café: café de origen premium cultivado con tradición en Santo Domingo, Antioquia. Explora nuestro catálogo de precios y aprende en nuestra escuela.">
+    <title>El Vagón del Café | Café de Origen de Santo Domingo, Antioquia</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script>
+        // Evitar destello blanco al cargar la página
+        const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) document.documentElement.classList.add('dark');
+        
+        function toggleDarkMode() {
+            const isCurrentlyDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isCurrentlyDark ? 'dark' : 'light');
+            document.querySelectorAll('.dark-mode-icon').forEach(icon => {
+                icon.className = isCurrentlyDark ? 'fa-solid fa-sun dark-mode-icon' : 'fa-solid fa-moon dark-mode-icon';
+            });
+        }
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.dark-mode-icon').forEach(icon => {
+                icon.className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun dark-mode-icon' : 'fa-solid fa-moon dark-mode-icon';
+            });
+        });
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuración personalizada de Tailwind -->
+    <script src="js/tailwind.config.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Estilos Personalizados SPA -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="font-sans antialiased selection:bg-brand-gold selection:text-white bg-brand-bg text-brand-dark dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Floating WhatsApp Button (Estilo 2) -->
+    <a href="https://wa.me/573000000000?text=Hola!%20Me%20interesa%20conocer%20mas%20sobre%20El%20Vagon%20del%20Cafe" 
+       target="_blank" rel="noopener noreferrer"
+       class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white h-14 w-14 rounded-full shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center text-3xl"
+       aria-label="Chatear por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Botón de Música Flotante (Estilo 2) -->
+    <button id="music-toggle" class="fixed bottom-6 left-6 z-50 bg-white border border-brand-border text-brand-dark h-14 w-14 rounded-full shadow-lg hover:shadow-2xl hover:border-brand-gold hover:text-brand-gold hover:scale-105 transition-all duration-300 flex items-center justify-center text-xl" aria-label="Reproducir/Pausar Música">
+        <i class="fa-solid fa-play"></i>
+    </button>
+    <audio id="bg-music" loop>
+        <source src="cancion.mpeg" type="audio/mpeg">
+    </audio>
+
+    <!-- Header & Navigation -->
+    <header class="fixed w-full top-0 z-40 bg-brand-bg/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-brand-border dark:border-slate-800 transition-all duration-300 py-2" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="#inicio" class="flex items-center gap-3 group" id="logo-link">
+                    <div class="h-12 w-12 rounded-full overflow-hidden flex items-center justify-center transform group-hover:scale-105 transition-transform bg-white shadow-sm border border-brand-border">
+                        <img src="assets/logo.png" alt="Logo El Vagón del Café" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-serif font-bold text-xl leading-none text-brand-dark">El Vagón</span>
+                        <span class="text-[10px] uppercase tracking-widest text-brand-gold font-bold">Café de Origen</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation (SPA Hash tabs) -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#inicio" class="nav-tab active text-sm text-gray-500 hover:text-brand-green dark:text-gray-400 dark:hover:text-brand-gold py-2 transition-colors" data-target="inicio"><i class="fa-solid fa-house mr-1"></i> Inicio</a>
+                    <a href="#catalogo" class="nav-tab text-sm text-gray-500 hover:text-brand-green dark:text-gray-400 dark:hover:text-brand-gold py-2 transition-colors" data-target="catalogo"><i class="fa-solid fa-shop mr-1"></i> Catálogo y Precios</a>
+                    <a href="#escuela" class="nav-tab text-sm text-gray-500 hover:text-brand-green dark:text-gray-400 dark:hover:text-brand-gold py-2 transition-colors" data-target="escuela"><i class="fa-solid fa-graduation-cap mr-1"></i> Escuela del Café</a>
+                    <a href="#contacto" class="nav-tab text-sm text-gray-500 hover:text-brand-green dark:text-gray-400 dark:hover:text-brand-gold py-2 transition-colors" data-target="contacto"><i class="fa-solid fa-envelope mr-1"></i> Contacto y Comunidad</a>
+                </nav>
+
+                <!-- Theme Toggle & Mobile Menu Button -->
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleDarkMode()" class="text-brand-dark dark:text-brand-gold hover:text-brand-gold transition-colors text-xl focus:outline-none" aria-label="Alternar modo oscuro">
+                        <i class="fa-solid fa-moon dark-mode-icon"></i>
+                    </button>
+                    <button id="mobile-btn" class="md:hidden text-brand-dark dark:text-gray-200 p-2 focus:outline-none" aria-label="Abrir menú de navegación">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Overlay -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-900 border-b border-brand-border dark:border-slate-800 shadow-xl absolute w-full left-0 top-full">
+            <div class="flex flex-col px-6 py-4 space-y-4">
+                <a href="#inicio" class="mobile-nav-tab active text-lg font-medium text-brand-dark dark:text-white border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2" data-target="inicio"><i class="fa-solid fa-house"></i> Inicio</a>
+                <a href="#catalogo" class="mobile-nav-tab text-lg font-medium text-brand-dark dark:text-white border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2" data-target="catalogo"><i class="fa-solid fa-shop"></i> Catálogo y Precios</a>
+                <a href="#escuela" class="mobile-nav-tab text-lg font-medium text-brand-dark dark:text-white border-b border-gray-100 dark:border-slate-700 pb-2 flex items-center gap-2" data-target="escuela"><i class="fa-solid fa-graduation-cap"></i> Escuela del Café</a>
+                <a href="#contacto" class="mobile-nav-tab text-lg font-medium text-brand-dark dark:text-white pb-2 flex items-center gap-2" data-target="contacto"><i class="fa-solid fa-envelope"></i> Contacto y Comunidad</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container (SPA Sections) -->
+    <main class="pt-32 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- ============================================== -->
+        <!-- SECTION 1: INICIO (HOME)                       -->
+        <!-- ============================================== -->
+        <section id="inicio" class="app-section active-section">
+            
+            <!-- Hero Wrapper (Exactamente igual que V1 pero estilizado V2) -->
+            <div class="relative w-full h-[500px] rounded-3xl overflow-hidden shadow-xl mb-16 flex items-center justify-center text-center p-8 bg-cover bg-center" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('assets/hero_coffee.png');">
+                <div class="relative z-10 text-white">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-gold/20 text-brand-gold text-xs font-bold uppercase tracking-widest mb-6 border border-brand-gold/30">
+                        <i class="fa-solid fa-certificate"></i> Origen: Santo Domingo, Antioquia
+                    </div>
+                    <h1 class="font-serif text-5xl lg:text-7xl font-bold leading-tight mb-4 shadow-sm">Del Campo a tu Taza</h1>
+                    <p class="text-lg md:text-xl font-light mb-8 max-w-2xl mx-auto text-gray-200">Café de origen cultivado con tradición en las tierras de Santo Domingo, Antioquia.</p>
+                    <button class="px-8 py-4 bg-brand-green hover:bg-brand-gold text-white rounded-full font-bold shadow-lg hover:shadow-hover hover:-translate-y-1 transition-all duration-300 text-center flex items-center justify-center gap-2 mx-auto" onclick="switchTab('catalogo')">
+                        <i class="fa-solid fa-shop"></i> Ver Catálogo y Precios
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Intro Nuestra Identidad -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 lg:p-12 shadow-soft border border-brand-border dark:border-slate-700 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center transition-colors duration-300">
+                <div>
+                    <h2 class="font-serif text-3xl font-bold text-brand-dark dark:text-white mb-4">Nuestra Identidad</h2>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">En <strong>El Vagón del Café</strong>, honramos el esfuerzo de nuestros caficultores. Cada grano es cosechado a mano en microclimas especiales, garantizando una taza balanceada y de calidad excepcional.</p>
+                    <p class="text-gray-600 dark:text-gray-300 mb-8">Santo Domingo se caracteriza por suelos ricos en minerales y una altitud ideal que aportan matices únicos, con notas dulces y achocolatadas que solo el verdadero café colombiano de altura puede ofrecer.</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 shrink-0 rounded-full bg-brand-lightGreen text-brand-green flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-mountain"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-brand-dark dark:text-white">100% Café de Altura</h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Cultivado a más de 1,900 msnm.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 shrink-0 rounded-full bg-brand-gold/20 text-brand-gold flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-hand-holding-heart"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-brand-dark dark:text-white">Recolección Manual</h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Solo seleccionamos los granos en su punto óptimo de madurez.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative w-full aspect-square md:aspect-auto md:h-full min-h-[300px]">
+                    <img src="assets/coffee_beans.png" alt="Granos de café tostado" class="rounded-3xl shadow-lg w-full h-full object-cover">
+                    <!-- Floating card exact to V1 but styled V2 -->
+                    <div class="absolute bottom-6 left-6 bg-white dark:bg-slate-800 px-5 py-4 rounded-2xl shadow-xl border border-brand-border dark:border-slate-700 flex items-center gap-3">
+                        <div class="bg-brand-lightGreen p-3 rounded-full text-brand-green">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Variedad</p>
+                            <p class="text-sm font-bold text-brand-dark dark:text-white">Castillo / Caturra</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SECTION 2: CATALOGO Y PRECIOS                  -->
+        <!-- ============================================== -->
+        <section id="catalogo" class="app-section">
+            
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-brand-gold font-bold uppercase tracking-widest text-xs">Nuestros Productos</span>
+                <h2 class="font-serif text-4xl lg:text-5xl font-bold text-brand-dark dark:text-white mt-4 mb-6">Precios Transparentes</h2>
+                <p class="text-gray-500 dark:text-gray-400">Selecciona la presentación ideal para ti. Ofrecemos precios directos sin intermediarios. Compra de forma segura con envío calculado directamente en MercadoLibre.</p>
+            </div>
+            
+            <!-- Product Grid (Exacto de V1: Solo 250g y 500g) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                
+                <!-- Card 1: 250g -->
+                <article class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-brand-border dark:border-slate-700 shadow-soft hover:shadow-hover transition-all duration-300 flex flex-col items-center text-center">
+                    <div class="w-full flex justify-between items-start mb-6">
+                        <span class="bg-brand-lightGreen text-brand-green text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm">El más popular</span>
+                    </div>
+                    <img src="assets/coffee_bag_250g.png" alt="Bolsa de Café 250g" class="w-48 h-48 object-contain mb-6 filter drop-shadow-md">
+                    
+                    <span class="text-xs font-bold text-brand-gold mb-2"><i class="fa-solid fa-fire"></i> Tueste Medio - Notas Achocolatadas</span>
+                    <h3 class="font-serif text-2xl font-bold text-brand-dark dark:text-white mb-4">Presentación Especial 250g</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-light mb-6">Ideal para uso individual o para probar la frescura de nuestro café de origen. Empaque con válvula desgasificadora.</p>
+                    
+                    <!-- Specs list -->
+                    <ul class="w-full text-sm text-left divide-y divide-gray-100 dark:divide-slate-700 border-t border-b border-gray-100 dark:border-slate-700 mb-8">
+                        <li class="py-3 flex justify-between"><span class="text-gray-500 dark:text-gray-400">Peso Neto:</span> <strong class="text-brand-dark dark:text-white">250 gramos</strong></li>
+                        <li class="py-3 flex justify-between"><span class="text-gray-500 dark:text-gray-400">Tipo de Molienda:</span> <strong class="text-brand-dark dark:text-white">Molido o En Grano</strong></li>
+                        <li class="py-3 flex justify-between"><span class="text-gray-500 dark:text-gray-400">Origen:</span> <strong class="text-brand-dark dark:text-white">Santo Domingo, Ant.</strong></li>
+                    </ul>
+                    
+                    <div class="mt-auto w-full">
+                        <div class="flex flex-col items-center mb-6">
+                            <span class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Precio Especial:</span>
+                            <div class="flex items-end gap-1 mb-2">
+                                <span class="text-4xl font-bold text-brand-dark dark:text-brand-gold leading-none">$22.000</span>
+                                <span class="text-sm text-gray-400 font-medium pb-1">COP</span>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400"><i class="fa-solid fa-truck text-brand-green"></i> Envío calculado en MercadoLibre</span>
+                        </div>
+                        <a href="https://articulo.mercadolibre.com.co" target="_blank" rel="noopener" class="w-full py-4 bg-brand-green hover:bg-brand-dark text-white rounded-full text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fa-solid fa-bag-shopping"></i> Comprar en MercadoLibre
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Card 2: 500g -->
+                <article class="bg-brand-dark text-white rounded-3xl p-8 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-transform duration-300 flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="w-full flex justify-between items-start mb-6 relative z-10">
+                        <span class="bg-brand-gold text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm">Mejor Valor por gramo</span>
+                    </div>
+                    <img src="assets/coffee_bag_500g.png" alt="Bolsa de Café 500g" class="w-48 h-48 object-contain mb-6 filter drop-shadow-xl relative z-10">
+                    
+                    <span class="text-xs font-bold text-brand-gold mb-2 relative z-10"><i class="fa-solid fa-fire"></i> Tueste Medio-Oscuro - Notas a Caramelo</span>
+                    <h3 class="font-serif text-2xl font-bold text-white mb-4 relative z-10">Presentación Familiar 500g</h3>
+                    <p class="text-sm text-gray-400 font-light mb-6 relative z-10">Perfecto para familias amantes del buen café que disfrutan de un sabor más intenso y con mayor cuerpo todos los días.</p>
+                    
+                    <!-- Specs list -->
+                    <ul class="w-full text-sm text-left divide-y divide-white/10 border-t border-b border-white/10 mb-8 relative z-10">
+                        <li class="py-3 flex justify-between"><span class="text-gray-400">Peso Neto:</span> <strong class="text-white">500 gramos</strong></li>
+                        <li class="py-3 flex justify-between"><span class="text-gray-400">Tipo de Molienda:</span> <strong class="text-white">Molido o En Grano</strong></li>
+                        <li class="py-3 flex justify-between"><span class="text-gray-400">Origen:</span> <strong class="text-white">Santo Domingo, Ant.</strong></li>
+                    </ul>
+                    
+                    <div class="mt-auto w-full relative z-10">
+                        <div class="flex flex-col items-center mb-6">
+                            <span class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Precio Especial:</span>
+                            <div class="flex items-end gap-1 mb-2">
+                                <span class="text-4xl font-bold text-brand-gold leading-none">$39.000</span>
+                                <span class="text-sm text-gray-400 font-medium pb-1">COP</span>
+                            </div>
+                            <span class="text-xs text-gray-400"><i class="fa-solid fa-truck text-brand-gold"></i> Envío calculado en MercadoLibre</span>
+                        </div>
+                        <a href="https://articulo.mercadolibre.com.co" target="_blank" rel="noopener" class="w-full py-4 bg-brand-gold hover:bg-white hover:text-brand-dark text-white rounded-full text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fa-solid fa-bag-shopping"></i> Comprar en MercadoLibre
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+            
+            <!-- CRO Info Banner -->
+            <div class="mt-16 max-w-3xl mx-auto bg-white dark:bg-slate-800 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-6 text-center md:text-left border border-brand-border dark:border-slate-700 shadow-soft">
+                <div class="w-20 h-20 shrink-0 bg-blue-50 dark:bg-slate-700 text-blue-500 dark:text-blue-400 rounded-full flex items-center justify-center text-3xl">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-brand-dark dark:text-white text-xl mb-2">Compra 100% Protegida</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Usamos MercadoLibre para gestionar los pagos y envíos, garantizando que tu dinero esté seguro y tu pedido llegue rápido a cualquier parte del país.</p>
+                </div>
+            </div>
+            
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SECTION 3: ESCUELA DEL CAFÉ                    -->
+        <!-- ============================================== -->
+        <section id="escuela" class="app-section">
+            
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-brand-gold font-bold uppercase tracking-widest text-xs">Aprende con Nosotros</span>
+                <h2 class="font-serif text-4xl lg:text-5xl font-bold text-brand-dark dark:text-white mt-4 mb-6">Escuela del Café</h2>
+                <p class="text-gray-500 dark:text-gray-400">El café es más que una bebida; es un ritual. Explora su origen en Santo Domingo y aprende cómo prepararlo como un barista profesional.</p>
+            </div>
+
+            <!-- Subsection 1: El Origen -->
+            <div class="bg-brand-dark text-white rounded-3xl p-8 lg:p-12 mb-16 shadow-xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#C5A059 1px, transparent 1px); background-size: 30px 30px;"></div>
+                <div class="relative z-10">
+                    <img src="assets/coffee_farm.png" alt="Finca cafetera en Santo Domingo, Antioquia" class="rounded-3xl shadow-lg w-full h-[400px] object-cover">
+                </div>
+                <div class="relative z-10">
+                    <h3 class="font-serif text-3xl font-bold mb-6 text-brand-gold">El Origen: Santo Domingo</h3>
+                    <p class="text-gray-300 font-light mb-4">Nuestro café se cultiva en la cordillera central de los Andes colombianos, en el municipio de Santo Domingo, Antioquia. Con una altitud promedio de 1,950 metros sobre el nivel del mar, una temperatura constante entre los 14°C y 20°C, y precipitaciones óptimas, creamos el microclima perfecto para la maduración lenta y concentrada de los granos.</p>
+                    <p class="text-gray-300 font-light mb-8">Esto permite a la planta de variedad Castillo y Caturra desarrollar ácidos orgánicos brillantes, un dulzor cítrico natural y notas marcadas de chocolate que destacan en cada infusión.</p>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-white/5 p-4 rounded-xl text-center border border-white/10">
+                            <span class="block text-2xl font-serif text-brand-gold font-bold">1,950m</span>
+                            <span class="text-xs text-gray-400">Altitud</span>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl text-center border border-white/10">
+                            <span class="block text-2xl font-serif text-brand-gold font-bold">17°C</span>
+                            <span class="text-xs text-gray-400">Clima</span>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl text-center border border-white/10">
+                            <span class="block text-2xl font-serif text-brand-gold font-bold">100%</span>
+                            <span class="text-xs text-gray-400">Manual</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subsection 2: Guías de Preparación (El Ritual) -->
+            <div class="mb-16">
+                <div class="text-center mb-10">
+                    <h3 class="font-serif text-3xl font-bold text-brand-dark dark:text-white mb-4">Guías de Preparación (El Ritual)</h3>
+                    <p class="text-gray-500 dark:text-gray-400">Descubre el método de extracción ideal para resaltar las mejores características de nuestro grano.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Método 1: Prensa Francesa -->
+                    <article class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-brand-border dark:border-slate-700 shadow-soft">
+                        <div class="flex flex-col items-center text-center mb-6">
+                            <div class="relative mb-6">
+                                <img src="assets/french_press.png" alt="Método Prensa Francesa" class="w-32 h-32 object-contain bg-brand-bg dark:bg-slate-700 rounded-full p-4 border border-brand-border dark:border-slate-600">
+                                <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-brand-gold text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm whitespace-nowrap"><i class="fa-regular fa-clock"></i> 4 min</span>
+                            </div>
+                            <h4 class="font-serif text-2xl font-bold text-brand-dark dark:text-white mb-2">Prensa Francesa</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Para una taza con mucho cuerpo, textura aceitosa agradable y sabor robusto.</p>
+                        </div>
+                        
+                        <div id="french-toggle-content" class="method-content text-sm text-gray-600 bg-brand-bg rounded-xl p-5 border border-brand-border">
+                            <ul class="list-none space-y-3">
+                                <li><i class="fa-solid fa-circle-dot text-brand-gold text-[8px] mr-2"></i><strong>Molienda:</strong> Gruesa (consistencia similar a sal marina).</li>
+                                <li><i class="fa-solid fa-circle-dot text-brand-gold text-[8px] mr-2"></i><strong>Proporción:</strong> 15g de café por 250ml de agua (92°C).</li>
+                                <li class="pt-2 border-t border-brand-border"><strong class="text-brand-green">Paso 1:</strong> Agrega el café molido y vierte 100ml de agua para la pre-infusión durante 30 segundos.</li>
+                                <li><strong class="text-brand-green">Paso 2:</strong> Vierte el resto del agua, revuelve suavemente y coloca la tapa con el émbolo arriba. Dejar reposar por 3 minutos y medio.</li>
+                                <li><strong class="text-brand-green">Paso 3:</strong> Presiona lentamente el émbolo hacia abajo de manera uniforme.</li>
+                            </ul>
+                        </div>
+                        <button class="mt-4 w-full py-3 bg-white text-brand-dark border border-brand-border hover:border-brand-green rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2" onclick="toggleMethodDetails('french-toggle-content', this)">
+                            <i class="fa-solid fa-chevron-down transition-transform"></i> <span>Ver Pasos de Preparación</span>
+                        </button>
+                    </article>
+
+                    <!-- Método 2: V60 -->
+                    <article class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-brand-border dark:border-slate-700 shadow-soft">
+                        <div class="flex flex-col items-center text-center mb-6">
+                            <div class="relative mb-6">
+                                <img src="assets/v60_brewing.png" alt="Método V60 Filtrado" class="w-32 h-32 object-contain bg-brand-bg dark:bg-slate-700 rounded-full p-4 border border-brand-border dark:border-slate-600">
+                                <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-brand-gold text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm whitespace-nowrap"><i class="fa-regular fa-clock"></i> 3 min</span>
+                            </div>
+                            <h4 class="font-serif text-2xl font-bold text-brand-dark dark:text-white mb-2">Filtrado Tradicional (V60)</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Para una taza limpia, con acidez brillante y notas aromáticas florales claras.</p>
+                        </div>
+                        
+                        <div id="v60-toggle-content" class="method-content text-sm text-gray-600 bg-brand-bg rounded-xl p-5 border border-brand-border">
+                            <ul class="list-none space-y-3">
+                                <li><i class="fa-solid fa-circle-dot text-brand-gold text-[8px] mr-2"></i><strong>Molienda:</strong> Media-Fina (consistencia de sal de mesa).</li>
+                                <li><i class="fa-solid fa-circle-dot text-brand-gold text-[8px] mr-2"></i><strong>Proporción:</strong> 16g de café por 250ml de agua (90-93°C).</li>
+                                <li class="pt-2 border-t border-brand-border"><strong class="text-brand-green">Paso 1:</strong> Enjuaga el filtro de papel con agua caliente para eliminar sabores a celulosa y calentar la taza. Desecha esa agua.</li>
+                                <li><strong class="text-brand-green">Paso 2:</strong> Agrega el café, haz una pre-infusión con 40ml de agua por 40 segundos.</li>
+                                <li><strong class="text-brand-green">Paso 3:</strong> Vierte el agua restante en círculos concéntricos desde el centro hacia afuera en vertidos lentos.</li>
+                            </ul>
+                        </div>
+                        <button class="mt-4 w-full py-3 bg-white text-brand-dark border border-brand-border hover:border-brand-green rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2" onclick="toggleMethodDetails('v60-toggle-content', this)">
+                            <i class="fa-solid fa-chevron-down transition-transform"></i> <span>Ver Pasos de Preparación</span>
+                        </button>
+                    </article>
+                </div>
+            </div>
+
+            <!-- Subsection 3: Notas de Cata -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 lg:p-12 border border-brand-border dark:border-slate-700 shadow-soft text-center">
+                <h3 class="font-serif text-3xl font-bold text-brand-dark dark:text-white mb-4">¿Cómo Catamos Nuestro Café?</h3>
+                <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-10">Nuestro grano destaca por un perfil sensorial balanceado. Al degustar una taza de El Vagón del Café, pon atención a las siguientes notas organolépticas:</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                    <div class="bg-brand-bg dark:bg-slate-900 p-6 rounded-2xl border border-brand-border dark:border-slate-700 hover:border-brand-gold transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 dark:text-yellow-400 flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-lemon"></i>
+                        </div>
+                        <h4 class="font-bold text-brand-dark dark:text-white mb-2">Acidez Cítrica Brillante</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Una sensación jugosa en los laterales de la lengua que recuerda a la naranja madura.</p>
+                    </div>
+                    <div class="bg-brand-bg dark:bg-slate-900 p-6 rounded-2xl border border-brand-border dark:border-slate-700 hover:border-brand-gold transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-cookie"></i>
+                        </div>
+                        <h4 class="font-bold text-brand-dark dark:text-white mb-2">Cuerpo Medio Sedoso</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Una textura suave y redonda en boca, que deja un retrogusto limpio y prolongado.</p>
+                    </div>
+                    <div class="bg-brand-bg dark:bg-slate-900 p-6 rounded-2xl border border-brand-border dark:border-slate-700 hover:border-brand-gold transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/50 text-brand-gold flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-candy-cane"></i>
+                        </div>
+                        <h4 class="font-bold text-brand-dark dark:text-white mb-2">Dulzor de Caramelo</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Un dulzor natural a panela y caña que minimiza la necesidad de añadir azúcar.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SECTION 4: CONTACTO Y COMUNIDAD                -->
+        <!-- ============================================== -->
+        <section id="contacto" class="app-section">
+            
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <span class="text-brand-gold font-bold uppercase tracking-widest text-xs">Únete a Nosotros</span>
+                <h2 class="font-serif text-4xl lg:text-5xl font-bold text-brand-dark dark:text-white mt-4 mb-6">Contacto y Comunidad</h2>
+                <p class="text-gray-500 dark:text-gray-400">¿Tienes preguntas sobre envíos mayoristas o quieres conocer más sobre nuestro proceso? Escríbenos o visítanos en redes sociales.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Form -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 lg:p-10 border border-brand-border dark:border-slate-700 shadow-soft">
+                    <h3 class="font-serif text-2xl font-bold text-brand-dark dark:text-white mb-6">Envíanos un mensaje</h3>
+                    <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                        <div>
+                            <label for="contact-name" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Nombre Completo <span class="text-red-500">*</span></label>
+                            <input type="text" id="contact-name" name="name" placeholder="Ej. Juan Pérez" required class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-600 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green bg-brand-bg/50 dark:bg-slate-700 dark:text-white dark:placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="contact-email" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Correo Electrónico <span class="text-red-500">*</span></label>
+                            <input type="email" id="contact-email" name="email" placeholder="juan@ejemplo.com" required class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-600 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green bg-brand-bg/50 dark:bg-slate-700 dark:text-white dark:placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="contact-phone" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Teléfono / Celular</label>
+                            <input type="tel" id="contact-phone" name="phone" placeholder="Ej. +57 300 123 4567" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-600 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green bg-brand-bg/50 dark:bg-slate-700 dark:text-white dark:placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label for="contact-message" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Mensaje <span class="text-red-500">*</span></label>
+                            <textarea id="contact-message" name="message" rows="4" placeholder="¿En qué podemos ayudarte?" required class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-600 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green bg-brand-bg/50 dark:bg-slate-700 dark:text-white dark:placeholder-gray-400 resize-none"></textarea>
+                        </div>
+                        
+                        <div id="form-status" class="form-status-msg"></div>
+
+                        <button type="submit" id="contact-submit-btn" class="w-full py-4 bg-brand-green hover:bg-brand-dark dark:hover:bg-brand-gold text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-paper-plane"></i> Enviar Mensaje
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Info & Social -->
+                <div class="space-y-8">
+                    <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-brand-border dark:border-slate-700 shadow-soft">
+                        <h3 class="font-serif text-2xl font-bold text-brand-dark dark:text-white mb-6">Canales Oficiales</h3>
+                        <ul class="space-y-6">
+                            <li class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-brand-lightGreen dark:bg-brand-green/20 text-brand-green dark:text-brand-gold flex items-center justify-center shrink-0 text-lg">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-brand-dark dark:text-white text-sm">Origen</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">Santo Domingo, Nordeste Antioqueño, Colombia</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-brand-lightGreen dark:bg-brand-green/20 text-brand-green dark:text-brand-gold flex items-center justify-center shrink-0 text-lg">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-brand-dark dark:text-white text-sm">Correo de soporte</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">hola@elvagondelcafe.com</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-brand-lightGreen dark:bg-brand-green/20 text-brand-green dark:text-brand-gold flex items-center justify-center shrink-0 text-lg">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-brand-dark dark:text-white text-sm">Ventas al por mayor</p>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">+57 300 000 0000</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-brand-dark rounded-3xl p-8 text-white shadow-xl">
+                        <h3 class="font-serif text-2xl font-bold mb-4">Comunidad en Redes</h3>
+                        <p class="text-gray-400 text-sm mb-6">Síguenos en Instagram para ver el proceso de cultivo, recolección y tostado directamente desde el campo en Santo Domingo.</p>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="w-full py-4 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:opacity-90 text-white rounded-2xl font-bold transition-opacity flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fa-brands fa-instagram text-xl"></i> Seguir en Instagram (@ElVagonDelCafe)
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="bg-white dark:bg-slate-900 border-t border-brand-border dark:border-slate-800 py-10 mt-auto transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-8 border-b border-gray-100 dark:border-slate-800 pb-8">
+                <div class="flex flex-col items-center md:items-start text-center md:text-left max-w-sm">
+                    <a href="#inicio" class="flex items-center gap-3 mb-4" onclick="switchTab('inicio')">
+                        <div class="h-10 w-10 rounded-full overflow-hidden bg-white shadow-sm border border-brand-border dark:border-slate-700">
+                            <img src="assets/logo.png" alt="Logo El Vagón" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-serif font-bold text-xl text-brand-dark dark:text-white">El Vagón del Café</span>
+                    </a>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Café de origen de variedades Castillo y Caturra, cultivado en Santo Domingo, Antioquia. Llevamos la tradición cafetera antioqueña directo a tu hogar.</p>
+                </div>
+                
+                <div class="flex flex-col items-center md:items-start">
+                    <h4 class="font-bold text-brand-dark dark:text-white mb-4">Navegación</h4>
+                    <ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400 text-center md:text-left">
+                        <li><a href="#inicio" onclick="switchTab('inicio')" class="hover:text-brand-green dark:hover:text-brand-gold transition-colors">Inicio</a></li>
+                        <li><a href="#catalogo" onclick="switchTab('catalogo')" class="hover:text-brand-green dark:hover:text-brand-gold transition-colors">Catálogo y Precios</a></li>
+                        <li><a href="#escuela" onclick="switchTab('escuela')" class="hover:text-brand-green dark:hover:text-brand-gold transition-colors">Escuela del Café</a></li>
+                        <li><a href="#contacto" onclick="switchTab('contacto')" class="hover:text-brand-green dark:hover:text-brand-gold transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+                <p>&copy; 2026 El Vagón del Café. Todos los derechos reservados.</p>
+                <div class="flex items-center gap-4">
+                    <a href="contabilidad.html" class="text-brand-gold hover:underline"><i class="fa-solid fa-chart-line"></i> Dashboard Privado</a>
+                    <p class="italic text-gray-300">Diseñado con pasión por la cultura cafetera.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts Personalizados -->
+    <script src="js/scripts.js"></script>
+</body>
+</html>
