@@ -108,8 +108,8 @@
                         <i class="fa-solid fa-bag-shopping"></i>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Ventas 250g</p>
-                        <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white">7 uds</p>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Stock Total 250g</p>
+                        <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-250">-</p>
                     </div>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft flex items-center gap-4 hover:border-brand-gold transition-colors">
@@ -117,8 +117,8 @@
                         <i class="fa-solid fa-box-open"></i>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Ventas 500g</p>
-                        <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white">7 uds</p>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Stock Total 500g</p>
+                        <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-500">-</p>
                     </div>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft flex items-center gap-4 hover:border-brand-gold transition-colors">
@@ -136,19 +136,19 @@
             <section>
                 <div class="flex items-center gap-2 mb-6 border-b border-brand-border dark:border-slate-700 pb-4">
                     <i class="fa-solid fa-chart-line text-brand-gold text-xl"></i>
-                    <h2 class="font-serif text-2xl font-bold dark:text-white">Evolución de Ventas al Detal (Mensual)</h2>
+                    <h2 class="font-serif text-2xl font-bold dark:text-white">Análisis de Stock por Local</h2>
                 </div>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Gráfico 250g -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-brand-border dark:border-slate-700 shadow-soft hover:shadow-lg transition-shadow">
-                        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4">Evolución Bolsas 250g</h3>
+                        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4">Stock Bolsas 250g por Local</h3>
                         <canvas id="chart250"></canvas>
                     </div>
                     
                     <!-- Gráfico 500g -->
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-brand-border dark:border-slate-700 shadow-soft hover:shadow-lg transition-shadow">
-                        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4">Evolución Bolsas 500g</h3>
+                        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4">Stock Bolsas 500g por Local</h3>
                         <canvas id="chart500"></canvas>
                     </div>
                 </div>
@@ -163,35 +163,16 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Cliente / Local</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Bolsas 250g</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Bolsas 500g</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Mes</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-center">Acciones</th>
+                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Local</th>
+                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Stock 250g</th>
+                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Stock 500g</th>
+                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Ventas (Mes)</th>
+                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Ingresos</th>
+                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-center">Estado</th>
                                 </tr>
                             </thead>
                             <tbody class="text-sm text-brand-dark dark:text-gray-200 divide-y divide-gray-100 dark:divide-slate-700">
-                                <tr class="hover:bg-brand-lightGreen/20 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td class="px-6 py-4 font-medium">Local 1</td>
-                                    <td class="px-6 py-4"><span class="bg-brand-green/10 dark:bg-brand-green/20 text-brand-green dark:text-brand-gold px-2 py-1 rounded font-bold">5</span></td>
-                                    <td class="px-6 py-4"><span class="text-gray-400">-</span></td>
-                                    <td class="px-6 py-4">Junio</td>
-                                    <td class="px-6 py-4 text-center text-gray-400 hover:text-brand-gold cursor-pointer"><i class="fa-solid fa-pen-to-square"></i></td>
-                                </tr>
-                                <tr class="hover:bg-brand-lightGreen/20 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td class="px-6 py-4 font-medium">Local 2</td>
-                                    <td class="px-6 py-4"><span class="text-gray-400">-</span></td>
-                                    <td class="px-6 py-4"><span class="bg-brand-gold/20 text-brand-gold px-2 py-1 rounded font-bold">5</span></td>
-                                    <td class="px-6 py-4">Junio</td>
-                                    <td class="px-6 py-4 text-center text-gray-400 hover:text-brand-gold cursor-pointer"><i class="fa-solid fa-pen-to-square"></i></td>
-                                </tr>
-                                <tr class="hover:bg-brand-lightGreen/20 dark:hover:bg-slate-700/50 transition-colors">
-                                    <td class="px-6 py-4 font-medium">Local 3</td>
-                                    <td class="px-6 py-4"><span class="bg-brand-green/10 dark:bg-brand-green/20 text-brand-green dark:text-brand-gold px-2 py-1 rounded font-bold">2</span></td>
-                                    <td class="px-6 py-4"><span class="bg-brand-gold/20 text-brand-gold px-2 py-1 rounded font-bold">2</span></td>
-                                    <td class="px-6 py-4">Junio</td>
-                                    <td class="px-6 py-4 text-center text-gray-400 hover:text-brand-gold cursor-pointer"><i class="fa-solid fa-pen-to-square"></i></td>
-                                </tr>
+                                <!-- Data injectada desde JS -->
                             </tbody>
                         </table>
                     </div>
@@ -256,7 +237,7 @@
            CONFIGURACIÓN DE GOOGLE SHEETS
            ========================================== */
         // Reemplaza estos valores con los enlaces CSV que te dé Google Sheets
-        const URL_VENTAS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=0&single=true&output=csv";
+        const URL_VENTAS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=874414878&single=true&output=csv";
         const URL_CLIENTES_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=18217608&single=true&output=csv";
 
         // Lógica de acceso simple
@@ -346,19 +327,45 @@
 
         function renderDashboard(dataVentas, dataClientes) {
             // Arrays vacíos para procesar los datos de las columnas del CSV
-            const meses = [];
-            const ventas250 = [];
-            const ventas500 = [];
+            const locales = [];
+            const stock250 = [];
+            const stock500 = [];
 
-            // Suponiendo columnas: "Mes", "Ventas_250g", "Ventas_500g"
-            dataVentas.forEach(row => {
-                meses.push(row.Mes || row.mes || "S/N");
-                ventas250.push(parseInt(row.Ventas_250g || row.ventas_250g) || 0);
-                ventas500.push(parseInt(row.Ventas_500g || row.ventas_500g) || 0);
-            });
+            // Poblar tabla principal de Ventas/Stock
+            const tbodyVentas = document.querySelector('table:nth-of-type(1) tbody');
+            if (tbodyVentas) {
+                tbodyVentas.innerHTML = '';
+                dataVentas.forEach(row => {
+                    if (!row['Local']) return; // Skip empty rows
+                    
+                    locales.push(row['Local']);
+                    stock250.push(parseInt(row['Stock 250 g']) || 0);
+                    stock500.push(parseInt(row['Stock 500 g']) || 0);
+
+                    const estado = row['Estado'] || "";
+                    const badgeClass = estado.includes("ERROR") 
+                                     ? "bg-red-100 text-red-600 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800" 
+                                     : "bg-green-100 text-green-600 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800";
+
+                    const html = `
+                        <tr class="hover:bg-brand-lightGreen/10 dark:hover:bg-slate-700/50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-brand-dark dark:text-white">${row['Local']}</td>
+                            <td class="px-6 py-4"><span class="bg-brand-green/10 dark:bg-brand-green/20 text-brand-green dark:text-brand-gold px-2 py-1 rounded font-bold">${row['Stock 250 g'] || '0'}</span></td>
+                            <td class="px-6 py-4"><span class="bg-brand-gold/20 text-brand-gold px-2 py-1 rounded font-bold">${row['Stock 500 g'] || '0'}</span></td>
+                            <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300">${row['Ventas del mes'] || '0'} uds</td>
+                            <td class="px-6 py-4 text-sm">
+                                <div class="text-brand-dark dark:text-white font-bold">${row['Ingresos del mes'] || '$0'}</div>
+                                <div class="text-xs text-gray-400">Hist: ${row['Ingresos historicos'] || '$0'}</div>
+                            </td>
+                            <td class="px-6 py-4 text-center"><span class="${badgeClass} px-2 py-1 rounded-full text-[10px] font-bold border">${estado}</span></td>
+                        </tr>
+                    `;
+                    tbodyVentas.insertAdjacentHTML('beforeend', html);
+                });
+            }
 
             // Dibujar gráficos reales
-            drawCharts(meses, ventas250, ventas500);
+            drawCharts(locales, stock250, stock500);
 
             // Poblar tabla de clientes (suponiendo columnas: "Fecha", "Cliente", "Detalle", "Deuda", "Estado")
             const tbody = document.querySelector('table:nth-of-type(1) tbody'); // Seleccionamos la segunda tabla (Mayoristas)
@@ -393,28 +400,36 @@
 
         // DIBUJAR GRÁFICOS
         function drawCharts(labels, data250, data500) {
-            // Actualizar KPI's Rápidos (Mes Actual = Último registro del array)
-            const kpi250 = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-3 > div:nth-child(1) .text-2xl');
-            const kpi500 = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-3 > div:nth-child(2) .text-2xl');
+            // Actualizar KPI's Rápidos sumando el stock total
+            const kpi250 = document.getElementById('kpi-250');
+            const kpi500 = document.getElementById('kpi-500');
             
-            if (kpi250 && data250.length > 0) kpi250.innerText = `${data250[data250.length - 1]} uds`;
-            if (kpi500 && data500.length > 0) kpi500.innerText = `${data500[data500.length - 1]} uds`;
+            if (kpi250 && data250.length > 0) {
+                const sum250 = data250.reduce((a, b) => a + b, 0);
+                kpi250.innerText = `${sum250} uds`;
+            }
+            if (kpi500 && data500.length > 0) {
+                const sum500 = data500.reduce((a, b) => a + b, 0);
+                kpi500.innerText = `${sum500} uds`;
+            }
 
             // Detectar modo oscuro
             const textColor = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#666';
             Chart.defaults.color = textColor;
 
             // Gráfico 250g
+            if (window.myChart250) window.myChart250.destroy();
             window.myChart250 = new Chart(document.getElementById('chart250').getContext('2d'), {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Ventas 250g', data: data250, backgroundColor: '#1A4331', borderRadius: 6 }] },
+                data: { labels: labels, datasets: [{ label: 'Stock 250g', data: data250, backgroundColor: '#1A4331', borderRadius: 6 }] },
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
             });
 
-            // Gráfico 500g
+            // Gráfico 500g (Convertido a barras dado que ahora son Locales y no tiempo continuo)
+            if (window.myChart500) window.myChart500.destroy();
             window.myChart500 = new Chart(document.getElementById('chart500').getContext('2d'), {
-                type: 'line',
-                data: { labels: labels, datasets: [{ label: 'Ventas 500g', data: data500, borderColor: '#C5A059', backgroundColor: 'rgba(197, 160, 89, 0.1)', borderWidth: 3, fill: true, tension: 0.4 }] },
+                type: 'bar',
+                data: { labels: labels, datasets: [{ label: 'Stock 500g', data: data500, backgroundColor: 'rgba(197, 160, 89, 0.8)', borderRadius: 6 }] },
                 options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
             });
         }
