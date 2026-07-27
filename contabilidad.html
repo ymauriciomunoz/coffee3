@@ -294,18 +294,17 @@
                     return;
                 }
 
-                // Agregar timestamp para evitar caché estricto y configuración para omitir credenciales
-                const ts = new Date().getTime();
-                const fetchConfig = { credentials: 'omit', cache: 'no-store' };
+                // Usar proxy para evitar el 302 redirect de Google hacia ServiceLogin (CORS)
+                const proxyBase = "https://api.allorigins.win/raw?url=";
 
-                // Obtener CSV de Ventas directamente
-                const resVentas = await fetch(URL_VENTAS_CSV + "&_=" + ts, fetchConfig);
+                // Obtener CSV de Ventas a través del proxy
+                const resVentas = await fetch(proxyBase + encodeURIComponent(URL_VENTAS_CSV));
                 if (!resVentas.ok) throw new Error("Error al obtener ventas");
                 const csvVentas = await resVentas.text();
                 const dataVentas = Papa.parse(csvVentas, { header: true, skipEmptyLines: true, transformHeader: h => h.trim() }).data;
 
-                // Obtener CSV de Clientes directamente
-                const resClientes = await fetch(URL_CLIENTES_CSV + "&_=" + ts, fetchConfig);
+                // Obtener CSV de Clientes a través del proxy
+                const resClientes = await fetch(proxyBase + encodeURIComponent(URL_CLIENTES_CSV));
                 if (!resClientes.ok) throw new Error("Error al obtener clientes");
                 const csvClientes = await resClientes.text();
                 const dataClientes = Papa.parse(csvClientes, { header: true, skipEmptyLines: true, transformHeader: h => h.trim() }).data;
