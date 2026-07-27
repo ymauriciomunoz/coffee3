@@ -3,38 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contabilidad | El Vagón del Café</title>
-    
+    <title>Resumen General | El Vagón del Café</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="js/tailwind.config.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
-    
-    <!-- Chart.js para los gráficos -->
+
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- PapaParse para procesar el CSV de Google Sheets -->
+    <!-- PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    
+
     <script>
-        // Evitar destello blanco al cargar la página
+        // Evitar destello blanco al cargar
         const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
         if (isDark) document.documentElement.classList.add('dark');
-        
+
         function toggleDarkMode() {
             const isCurrentlyDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isCurrentlyDark ? 'dark' : 'light');
             document.querySelectorAll('.dark-mode-icon').forEach(icon => {
                 icon.className = isCurrentlyDark ? 'fa-solid fa-sun dark-mode-icon' : 'fa-solid fa-moon dark-mode-icon';
             });
-            // Update charts if they exist
-            if (window.myChart250 && window.myChart500) {
-                Chart.defaults.color = isCurrentlyDark ? '#9ca3af' : '#666';
-                window.myChart250.update();
-                window.myChart500.update();
-            }
         }
-        
+
         window.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.dark-mode-icon').forEach(icon => {
                 icon.className = document.documentElement.classList.contains('dark') ? 'fa-solid fa-sun dark-mode-icon' : 'fa-solid fa-moon dark-mode-icon';
@@ -42,7 +36,7 @@
         });
     </script>
 </head>
-</head>
+<head></head>
 <body class="font-sans antialiased bg-brand-bg text-brand-dark dark:bg-slate-900 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-300">
 
     <!-- Pantalla de Login -->
@@ -53,33 +47,29 @@
             </div>
             <h2 class="font-serif text-2xl font-bold mb-2 dark:text-white">Área Privada</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Ingresa la contraseña para acceder a la contabilidad.</p>
-            
             <input type="password" id="password-input" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-600 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold mb-4 bg-white dark:bg-slate-700 dark:text-white dark:placeholder-gray-400" placeholder="Contraseña">
             <p id="login-error" class="text-red-500 text-xs mb-4 hidden">Contraseña incorrecta</p>
-            
-            <button onclick="checkPassword()" class="w-full py-3 bg-brand-dark hover:bg-brand-green text-white rounded-xl font-bold transition-colors">
-                Ingresar
-            </button>
+            <button onclick="checkPassword()" class="w-full py-3 bg-brand-dark hover:bg-brand-green text-white rounded-xl font-bold transition-colors">Ingresar</button>
             <div class="mt-6">
                 <a href="index.html" class="text-sm text-brand-gold hover:underline"><i class="fa-solid fa-arrow-left"></i> Volver a la tienda</a>
             </div>
         </div>
     </div>
 
-    <!-- Dashboard (Oculto inicialmente) -->
+    <!-- Dashboard -->
     <div id="dashboard" class="hidden flex-col flex-1">
-        
-        <!-- Header del Dashboard -->
+
+        <!-- Header -->
         <header class="bg-white dark:bg-slate-900 border-b border-brand-border dark:border-slate-800 py-4 transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <div class="h-10 w-10 rounded-full overflow-hidden bg-brand-bg dark:bg-slate-800 border border-gray-100 dark:border-slate-700 flex items-center justify-center text-brand-green dark:text-brand-gold">
                         <i class="fa-solid fa-chart-pie"></i>
                     </div>
-                    <span class="font-serif font-bold text-xl dark:text-white hidden sm:inline">Métricas y Ventas</span>
-                    
-                    <!-- Foco de Estado de Datos -->
-                    <div class="ml-4 flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full shadow-sm" id="data-status-container" title="Conexión con Google Sheets">
+                    <span class="font-serif font-bold text-xl dark:text-white hidden sm:inline">Resumen General</span>
+
+                    <!-- Foco de Estado -->
+                    <div class="ml-4 flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full shadow-sm" id="data-status-container">
                         <span class="relative flex h-3 w-3">
                             <span id="data-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
                             <span id="data-status-dot" class="relative inline-flex rounded-full h-3 w-3 bg-gray-400"></span>
@@ -87,7 +77,6 @@
                         <span id="data-status-text" class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Conectando...</span>
                     </div>
                 </div>
-                
                 <div class="flex items-center gap-4">
                     <button onclick="toggleDarkMode()" class="text-brand-dark dark:text-brand-gold hover:text-brand-gold transition-colors text-xl focus:outline-none" aria-label="Alternar modo oscuro">
                         <i class="fa-solid fa-moon dark-mode-icon"></i>
@@ -99,345 +88,446 @@
             </div>
         </header>
 
-        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-12">
-            
-            <!-- Resumen Rápido -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft flex items-center gap-4 hover:border-brand-gold transition-colors">
-                    <div class="w-12 h-12 rounded-full bg-brand-lightGreen dark:bg-brand-green/20 text-brand-green dark:text-brand-gold flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-bag-shopping"></i>
+        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+
+            <!-- ===== 5 KPI CARDS ===== -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+
+                <!-- KPI 1: Ventas Totales -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft hover:border-brand-gold transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 rounded-full bg-brand-lightGreen dark:bg-brand-green/20 text-brand-green dark:text-brand-gold flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Ventas Totales (Mes)</p>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Stock Total 250g</p>
-                        <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-250">-</p>
-                    </div>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-ventas-total">-</p>
+                    <p class="text-xs text-gray-400 mt-1" id="kpi-ventas-detalle">250g: - | 500g: -</p>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft flex items-center gap-4 hover:border-brand-gold transition-colors">
-                    <div class="w-12 h-12 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-box-open"></i>
+
+                <!-- KPI 2: Ingresos -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft hover:border-brand-gold transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-dollar-sign"></i>
+                        </div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Ingresos Totales (Mes)</p>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Stock Total 500g</p>
-                        <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-500">-</p>
-                    </div>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-ingresos-total">-</p>
+                    <p class="text-xs text-gray-400 mt-1" id="kpi-ingresos-detalle">250g: - | 500g: -</p>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft flex items-center gap-4 hover:border-brand-gold transition-colors">
-                    <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
+
+                <!-- KPI 3: Inventario -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft hover:border-brand-gold transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Inventario Total</p>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Crecimiento (Mes)</p>
-                        <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white">-15%</p>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-inventario-total">-</p>
+                    <p class="text-xs text-gray-400 mt-1" id="kpi-inventario-detalle">250g: - | 500g: -</p>
+                </div>
+
+                <!-- KPI 4: Locales con Stock Bajo -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft hover:border-orange-400 transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-500 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Locales con Stock Bajo</p>
                     </div>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-stock-bajo">-</p>
+                    <p class="text-xs text-orange-400 mt-1 font-medium cursor-pointer hover:underline" id="kpi-stock-detalle">Ver detalles</p>
+                </div>
+
+                <!-- KPI 5: Precio por Kilo (hardcoded) -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-gold/40 dark:border-brand-gold/30 shadow-soft hover:border-brand-gold transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-tag"></i>
+                        </div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Precio por Kilo</p>
+                    </div>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white">$17.000</p>
+                    <p class="text-xs text-gray-400 mt-1">Precio actual del café</p>
                 </div>
             </div>
 
-            <!-- SECCIÓN 1: Gráficos de Ventas -->
-            <section>
-                <div class="flex items-center gap-2 mb-6 border-b border-brand-border dark:border-slate-700 pb-4">
-                    <i class="fa-solid fa-chart-line text-brand-gold text-xl"></i>
-                    <h2 class="font-serif text-2xl font-bold dark:text-white">Análisis de Stock por Local</h2>
+            <!-- ===== EVOLUCIÓN MENSUAL (2 gráficos arriba) ===== -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Bolsas vendidas</p>
+                    <h3 class="font-serif font-bold text-brand-dark dark:text-white mb-4">Evolución Bolsas 250g</h3>
+                    <canvas id="chart250" height="120"></canvas>
                 </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Gráfico 250g -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-brand-border dark:border-slate-700 shadow-soft hover:shadow-lg transition-shadow">
-                        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4">Stock Bolsas 250g por Local</h3>
-                        <canvas id="chart250"></canvas>
-                    </div>
-                    
-                    <!-- Gráfico 500g -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-brand-border dark:border-slate-700 shadow-soft hover:shadow-lg transition-shadow">
-                        <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4">Stock Bolsas 500g por Local</h3>
-                        <canvas id="chart500"></canvas>
-                    </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Bolsas vendidas</p>
+                    <h3 class="font-serif font-bold text-brand-dark dark:text-white mb-4">Evolución Bolsas 500g</h3>
+                    <canvas id="chart500" height="120"></canvas>
+                </div>
+            </div>
+
+            <!-- ===== 3 GRÁFICOS ABAJO ===== -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Ventas por Local (Este Mes) -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                    <h3 class="font-serif font-bold text-brand-dark dark:text-white mb-1">Ventas por Local (Este Mes)</h3>
+                    <p class="text-xs text-gray-400 mb-4">Bolsas vendidas</p>
+                    <canvas id="chartVentasLocal" height="180"></canvas>
                 </div>
 
-                <!-- Tabla de Fuente de Datos -->
-                <div class="mt-12 bg-white dark:bg-slate-800 rounded-3xl border border-brand-border dark:border-slate-700 shadow-soft overflow-hidden">
-                    <div class="px-6 py-4 border-b border-brand-border dark:border-slate-700 bg-brand-bg dark:bg-slate-900 flex items-center justify-between">
-                        <h3 class="font-bold text-brand-dark dark:text-white">Registro Manual de Ventas (Fuente de Datos)</h3>
-                        <button class="text-sm text-brand-green dark:text-brand-gold font-medium hover:underline"><i class="fa-solid fa-plus"></i> Añadir Fila</button>
+                <!-- Inventario por Local -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                    <h3 class="font-serif font-bold text-brand-dark dark:text-white mb-1">Inventario Actual por Local (Bolsas)</h3>
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="flex items-center gap-1 text-xs text-gray-500"><span class="inline-block w-3 h-3 rounded-sm bg-brand-gold"></span> 250g</span>
+                        <span class="flex items-center gap-1 text-xs text-gray-500"><span class="inline-block w-3 h-3 rounded-sm bg-blue-400"></span> 500g</span>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Local</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Stock 250g</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Stock 500g</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Ventas (Mes)</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Ingresos</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-center">Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm text-brand-dark dark:text-gray-200 divide-y divide-gray-100 dark:divide-slate-700">
-                                <!-- Data injectada desde JS -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <canvas id="chartInventarioLocal" height="180"></canvas>
                 </div>
-            </section>
 
-            <!-- SECCIÓN 2: Ventas al Por Mayor y Clientes -->
-            <section>
-                <div class="flex items-center gap-2 mb-6 border-b border-brand-border dark:border-slate-700 pb-4">
-                    <i class="fa-solid fa-truck-fast text-brand-green dark:text-brand-gold text-xl"></i>
-                    <h2 class="font-serif text-2xl font-bold dark:text-white">Estado de Clientes Especiales y Mayoristas</h2>
+                <!-- Ingresos Mensuales -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                    <h3 class="font-serif font-bold text-brand-dark dark:text-white mb-4">Ingresos Mensuales</h3>
+                    <canvas id="chartIngresos" height="180"></canvas>
                 </div>
-                
-                <div class="bg-white dark:bg-slate-800 rounded-3xl border border-brand-border dark:border-slate-700 shadow-soft overflow-hidden">
-                    <div class="px-6 py-4 border-b border-brand-border dark:border-slate-700 bg-brand-bg dark:bg-slate-900 flex items-center justify-between">
-                        <h3 class="font-bold text-brand-dark dark:text-white">Cuentas y Pedidos Pendientes</h3>
-                        <button class="text-sm text-brand-green dark:text-brand-gold font-medium hover:underline"><i class="fa-solid fa-user-plus"></i> Nuevo Registro</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Fecha</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Cliente / Local</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Detalle del Pedido</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Total Deuda</th>
-                                    <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Estado Pago</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm text-brand-dark dark:text-gray-200 divide-y divide-gray-100 dark:divide-slate-700">
-                                <tr class="hover:bg-brand-lightGreen/10 transition-colors">
-                                    <td class="px-6 py-4 text-gray-500">27/06/2026</td>
-                                    <td class="px-6 py-4 font-medium flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-brand-green text-white flex items-center justify-center text-xs font-bold">C1</div>
-                                        Cliente 1
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <p class="font-bold">2000 gr <span class="font-normal text-gray-500">(Granel)</span></p>
-                                        <p class="font-bold">3 unidades <span class="font-normal text-gray-500">(Bolsas 250g)</span></p>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-brand-dark">$210.000</td>
-                                    <td class="px-6 py-4"><span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-200">Debe</span></td>
-                                </tr>
-                                <!-- Siguientes filas (Excel) -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+            </div>
 
         </main>
-        
+
         <footer class="bg-white dark:bg-slate-900 border-t border-brand-border dark:border-slate-800 py-6 mt-auto transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-400">
-                Panel Administrativo Privado - El Vagón del Café
+                Panel Administrativo Privado — El Vagón del Café
             </div>
         </footer>
     </div>
 
     <script>
         /* ==========================================
-           CONFIGURACIÓN DE GOOGLE SHEETS
-           ========================================== */
-        // Reemplaza estos valores con los enlaces CSV que te dé Google Sheets
-        const URL_VENTAS_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=874414878&single=true&output=csv";
-        const URL_CLIENTES_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=18217608&single=true&output=csv";
+           URLS DE GOOGLE SHEETS (3 pestañas)
+        ========================================== */
+        const URL_GRAFICA_CSV    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=1308828455&single=true&output=csv";
+        const URL_RESUMEN_CSV    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=874414878&single=true&output=csv";
+        const URL_MOVIMIENTOS_CSV= "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=1434608398&single=true&output=csv";
+        const PROXY = "https://api.allorigins.win/raw?url=";
 
-        // Lógica de acceso simple
+        /* ==========================================
+           LOGIN
+        ========================================== */
         function checkPassword() {
             const input = document.getElementById('password-input').value;
             const error = document.getElementById('login-error');
-            
-            if (input === 'vanessahermosa') {
-                document.getElementById('login-screen').classList.add('hidden');
+            const PASS  = "vagon2024";
+            if (input === PASS) {
+                document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard').classList.remove('hidden');
                 document.getElementById('dashboard').classList.add('flex');
-                
-                // Iniciar la descarga de datos reales
                 fetchDataAndInit();
             } else {
                 error.classList.remove('hidden');
+                document.getElementById('password-input').value = '';
             }
         }
 
-        document.getElementById('password-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') checkPassword();
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('password-input').addEventListener('keypress', e => {
+                if (e.key === 'Enter') checkPassword();
+            });
         });
 
         /* ==========================================
-           LÓGICA DE DATOS DINÁMICOS
-           ========================================== */
-        
+           FETCH Y RENDER
+        ========================================== */
         async function fetchDataAndInit() {
-            const statusDot = document.getElementById('data-status-dot');
-            const statusPing = document.getElementById('data-status-ping');
-            const statusText = document.getElementById('data-status-text');
-            
-            function setStatusError(errMsg = "Sin conexión (Mock)") {
-                statusDot.className = "relative inline-flex rounded-full h-3 w-3 bg-red-500";
-                statusPing.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75";
-                statusText.innerText = errMsg;
-                statusText.className = "text-[9px] font-bold text-red-600 uppercase tracking-wider";
-                
-                // Si la tabla original está vacía por haber limpiado, aseguramos que mock funcione
-                initChartsMock();
-            }
+            const dot  = document.getElementById('data-status-dot');
+            const ping = document.getElementById('data-status-ping');
+            const txt  = document.getElementById('data-status-text');
 
-            function setStatusSuccess() {
-                statusDot.className = "relative inline-flex rounded-full h-3 w-3 bg-green-500";
-                statusPing.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75";
-                statusText.innerText = "Datos en Vivo";
-                statusText.className = "text-[10px] font-bold text-green-600 uppercase tracking-wider";
-            }
+            const setError = () => {
+                dot.className  = "relative inline-flex rounded-full h-3 w-3 bg-red-500";
+                ping.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75";
+                txt.innerText  = "Error CORS/Red (Mock)";
+                txt.className  = "text-[9px] font-bold text-red-600 uppercase tracking-wider";
+                loadMock();
+            };
+
+            const setOk = () => {
+                dot.className  = "relative inline-flex rounded-full h-3 w-3 bg-green-500";
+                ping.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75";
+                txt.innerText  = "Datos en Vivo";
+                txt.className  = "text-[10px] font-bold text-green-600 uppercase tracking-wider";
+            };
 
             try {
-                if (!URL_VENTAS_CSV || !URL_CLIENTES_CSV) {
-                    console.warn("URLs de Google Sheets no configuradas. Cargando datos de prueba (Mock Data)...");
-                    setStatusError();
-                    return;
-                }
+                const [resG, resR, resM] = await Promise.all([
+                    fetch(PROXY + encodeURIComponent(URL_GRAFICA_CSV)),
+                    fetch(PROXY + encodeURIComponent(URL_RESUMEN_CSV)),
+                    fetch(PROXY + encodeURIComponent(URL_MOVIMIENTOS_CSV))
+                ]);
 
-                // Usar proxy para evitar el 302 redirect de Google hacia ServiceLogin (CORS)
-                const proxyBase = "https://api.allorigins.win/raw?url=";
+                if (!resG.ok || !resR.ok || !resM.ok) throw new Error("Fetch failed");
 
-                // Obtener CSV de Ventas a través del proxy
-                const resVentas = await fetch(proxyBase + encodeURIComponent(URL_VENTAS_CSV));
-                if (!resVentas.ok) throw new Error("Error al obtener ventas");
-                const csvVentas = await resVentas.text();
-                const dataVentas = Papa.parse(csvVentas, { header: true, skipEmptyLines: true, transformHeader: h => h.trim() }).data;
+                const parse = (csv) => Papa.parse(csv, { header: true, skipEmptyLines: true, transformHeader: h => h.trim() }).data;
 
-                // Obtener CSV de Clientes a través del proxy
-                const resClientes = await fetch(proxyBase + encodeURIComponent(URL_CLIENTES_CSV));
-                if (!resClientes.ok) throw new Error("Error al obtener clientes");
-                const csvClientes = await resClientes.text();
-                const dataClientes = Papa.parse(csvClientes, { header: true, skipEmptyLines: true, transformHeader: h => h.trim() }).data;
+                const dataGrafica     = parse(await resG.text());
+                const dataResumen     = parse(await resR.text());
+                const dataMovimientos = parse(await resM.text());
 
-                // Si la consulta fue exitosa pero no hay datos útiles, considerar error
-                if (dataVentas.length === 0 && dataClientes.length === 0) {
-                    throw new Error("El documento existe pero está vacío o no tiene la estructura correcta.");
-                }
+                if (dataGrafica.length === 0 && dataResumen.length === 0) throw new Error("Sin datos");
 
-                // Inicializar dashboard real
-                renderDashboard(dataVentas, dataClientes);
-                setStatusSuccess();
+                renderDashboard(dataGrafica, dataResumen, dataMovimientos);
+                setOk();
 
-            } catch (error) {
-                console.error("Error al cargar datos desde Google Sheets:", error);
-                setStatusError(error.message === "Failed to fetch" ? "Error CORS/Red (Mock)" : error.message.substring(0, 20));
+            } catch (err) {
+                console.error("Error Google Sheets:", err);
+                setError();
             }
         }
 
-        function renderDashboard(dataVentas, dataClientes) {
-            // Arrays vacíos para procesar los datos de las columnas del CSV
-            const locales = [];
-            const stock250 = [];
-            const stock500 = [];
-
-            // Poblar tabla principal de Ventas/Stock
-            const tbodyVentas = document.querySelector('table:nth-of-type(1) tbody');
-            if (tbodyVentas) {
-                tbodyVentas.innerHTML = '';
-                dataVentas.forEach(row => {
-                    if (!row['Local']) return; // Skip empty rows
-                    
-                    locales.push(row['Local']);
-                    stock250.push(parseInt(row['Stock 250 g']) || 0);
-                    stock500.push(parseInt(row['Stock 500 g']) || 0);
-
-                    const estado = row['Estado'] || "";
-                    const badgeClass = estado.includes("ERROR") 
-                                     ? "bg-red-100 text-red-600 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800" 
-                                     : "bg-green-100 text-green-600 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800";
-
-                    const html = `
-                        <tr class="hover:bg-brand-lightGreen/10 dark:hover:bg-slate-700/50 transition-colors">
-                            <td class="px-6 py-4 font-medium text-brand-dark dark:text-white">${row['Local']}</td>
-                            <td class="px-6 py-4"><span class="bg-brand-green/10 dark:bg-brand-green/20 text-brand-green dark:text-brand-gold px-2 py-1 rounded font-bold">${row['Stock 250 g'] || '0'}</span></td>
-                            <td class="px-6 py-4"><span class="bg-brand-gold/20 text-brand-gold px-2 py-1 rounded font-bold">${row['Stock 500 g'] || '0'}</span></td>
-                            <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300">${row['Ventas del mes'] || '0'} uds</td>
-                            <td class="px-6 py-4 text-sm">
-                                <div class="text-brand-dark dark:text-white font-bold">${row['Ingresos del mes'] || '$0'}</div>
-                                <div class="text-xs text-gray-400">Hist: ${row['Ingresos historicos'] || '$0'}</div>
-                            </td>
-                            <td class="px-6 py-4 text-center"><span class="${badgeClass} px-2 py-1 rounded-full text-[10px] font-bold border">${estado}</span></td>
-                        </tr>
-                    `;
-                    tbodyVentas.insertAdjacentHTML('beforeend', html);
-                });
-            }
-
-            // Dibujar gráficos reales
-            drawCharts(locales, stock250, stock500);
-
-            // Poblar tabla de clientes (suponiendo columnas: "Fecha", "Cliente", "Detalle", "Deuda", "Estado")
-            const tbody = document.querySelector('table:nth-of-type(1) tbody'); // Seleccionamos la segunda tabla (Mayoristas)
-            const tbodyMayoristas = document.querySelectorAll('table tbody')[1];
-            
-            if (tbodyMayoristas) {
-                tbodyMayoristas.innerHTML = ''; // Limpiamos tabla
-                dataClientes.forEach((row, index) => {
-                    // Prevenir filas completamente vacías generadas por comas extras al final del CSV
-                    if (!row.Cliente && !row.Detalle && !row.Deuda) return;
-                    
-                    const statusClass = (row.Estado || row.estado || "").toLowerCase().includes("pagado") 
-                                      ? "bg-green-100 text-green-600 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800" 
-                                      : "bg-red-100 text-red-600 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800";
-
-                    const html = `
-                        <tr class="hover:bg-brand-lightGreen/10 dark:hover:bg-slate-700/50 transition-colors">
-                            <td class="px-6 py-4 text-gray-500 dark:text-gray-400">${row.Fecha || "-"}</td>
-                            <td class="px-6 py-4 font-medium flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-brand-green dark:bg-brand-gold text-white dark:text-slate-900 flex items-center justify-center text-xs font-bold">C${index+1}</div>
-                                ${row.Cliente || "-"}
-                            </td>
-                            <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-200">${row.Detalle || "-"}</td>
-                            <td class="px-6 py-4 font-bold text-brand-dark dark:text-brand-gold">$${row.Deuda || "0"}</td>
-                            <td class="px-6 py-4"><span class="${statusClass} px-3 py-1 rounded-full text-xs font-bold border">${row.Estado || "Debe"}</span></td>
-                        </tr>
-                    `;
-                    tbodyMayoristas.insertAdjacentHTML('beforeend', html);
-                });
-            }
+        /* ==========================================
+           HELPERS
+        ========================================== */
+        function parseMoney(str) {
+            if (!str) return 0;
+            return parseInt(String(str).replace(/[^0-9]/g, '')) || 0;
         }
 
-        // DIBUJAR GRÁFICOS
-        function drawCharts(labels, data250, data500) {
-            // Actualizar KPI's Rápidos sumando el stock total
-            const kpi250 = document.getElementById('kpi-250');
-            const kpi500 = document.getElementById('kpi-500');
-            
-            if (kpi250 && data250.length > 0) {
-                const sum250 = data250.reduce((a, b) => a + b, 0);
-                kpi250.innerText = `${sum250} uds`;
-            }
-            if (kpi500 && data500.length > 0) {
-                const sum500 = data500.reduce((a, b) => a + b, 0);
-                kpi500.innerText = `${sum500} uds`;
-            }
+        function formatMoney(n) {
+            return '$' + n.toLocaleString('es-CO');
+        }
 
-            // Detectar modo oscuro
-            const textColor = document.documentElement.classList.contains('dark') ? '#9ca3af' : '#666';
-            Chart.defaults.color = textColor;
+        function formatK(n) {
+            if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000)    return '$' + Math.round(n / 1000) + 'k';
+            return '$' + n;
+        }
 
-            // Gráfico 250g
-            if (window.myChart250) window.myChart250.destroy();
-            window.myChart250 = new Chart(document.getElementById('chart250').getContext('2d'), {
-                type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Stock 250g', data: data250, backgroundColor: '#1A4331', borderRadius: 6 }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        function destroyChart(key) {
+            if (window[key]) { window[key].destroy(); window[key] = null; }
+        }
+
+        function isDarkMode() {
+            return document.documentElement.classList.contains('dark');
+        }
+
+        function chartColors() {
+            return {
+                text:    isDarkMode() ? '#9ca3af' : '#6b7280',
+                grid:    isDarkMode() ? '#334155' : '#e5e7eb',
+                green:   '#1A4331',
+                gold:    'rgba(197,160,89,0.85)',
+                blue:    'rgba(96,165,250,0.85)',
+                income:  '#22c55e',
+            };
+        }
+
+        /* ==========================================
+           RENDER PRINCIPAL
+        ========================================== */
+        function renderDashboard(dataGrafica, dataResumen, dataMovimientos) {
+            const c = chartColors();
+            Chart.defaults.color = c.text;
+
+            // --- KPI desde pestaña GRAFICA (último mes con datos) ---
+            const lastRow = [...dataGrafica].reverse().find(r => parseMoney(r['Ingresos_total']) > 0 || parseInt(r['Total_bolsas']) > 0) || dataGrafica[dataGrafica.length - 1] || {};
+
+            const ventasMes250 = parseInt(lastRow['Ventas_250g']) || 0;
+            const ventasMes500 = parseInt(lastRow['Ventas_500g']) || 0;
+            const ventasMesTotal = ventasMes250 + ventasMes500;
+            const ingresosMes250 = parseMoney(lastRow['Ingresos_250g']);
+            const ingresosMes500 = parseMoney(lastRow['Ingresos_500g']);
+            const ingresosMesTotal = parseMoney(lastRow['Ingresos_total']) || (ingresosMes250 + ingresosMes500);
+
+            setText('kpi-ventas-total',   `${ventasMesTotal} bolsas`);
+            setText('kpi-ventas-detalle', `250g: ${ventasMes250} | 500g: ${ventasMes500}`);
+            setText('kpi-ingresos-total',   formatMoney(ingresosMesTotal));
+            setText('kpi-ingresos-detalle', `250g: ${formatMoney(ingresosMes250)} | 500g: ${formatMoney(ingresosMes500)}`);
+
+            // --- KPI desde pestaña RESUMEN (inventario) ---
+            let tot250 = 0, tot500 = 0, localesBajos = 0;
+            dataResumen.forEach(r => {
+                const s250 = parseInt(r['Stock 250 g']) || 0;
+                const s500 = parseInt(r['Stock 500 g']) || 0;
+                tot250 += s250;
+                tot500 += s500;
+                if ((s250 + s500) === 0) localesBajos++;
             });
 
-            // Gráfico 500g (Convertido a barras dado que ahora son Locales y no tiempo continuo)
-            if (window.myChart500) window.myChart500.destroy();
-            window.myChart500 = new Chart(document.getElementById('chart500').getContext('2d'), {
+            setText('kpi-inventario-total',   `${tot250 + tot500} bolsas`);
+            setText('kpi-inventario-detalle', `250g: ${tot250} | 500g: ${tot500}`);
+            setText('kpi-stock-bajo', `${localesBajos} locales`);
+
+            // --- Gráficos de evolución mensual (pestaña GRAFICA) ---
+            const meses    = dataGrafica.map(r => capitalize(r['Mes'] || r['Periodo'] || ''));
+            const v250     = dataGrafica.map(r => parseInt(r['Ventas_250g']) || 0);
+            const v500     = dataGrafica.map(r => parseInt(r['Ventas_500g']) || 0);
+            const ingresos = dataGrafica.map(r => parseMoney(r['Ingresos_total']));
+
+            drawBarChart('chart250', meses, v250, 'Bolsas 250g', c.green, c);
+            drawBarChart('chart500', meses, v500, 'Bolsas 500g', c.gold, c);
+            drawLineChart('chartIngresos', meses, ingresos, 'Ingresos', c.income, c);
+
+            // --- Ventas por local este mes (pestaña MOVIMIENTOS) ---
+            const mesActual = new Date().toISOString().slice(0, 7); // "2026-07"
+            const ventasPorLocal = {};
+            dataMovimientos.forEach(r => {
+                if (!r['Fecha']) return;
+                // Convertir DD/MM/YYYY a YYYY-MM para comparar
+                const partes = (r['Fecha'] || '').split('/');
+                const fechaISO = partes.length === 3 ? `${partes[2]}-${partes[1]}` : '';
+                if (fechaISO === mesActual) {
+                    const local = r['Local'] || 'Desconocido';
+                    ventasPorLocal[local] = (ventasPorLocal[local] || 0) + (parseInt(r['Cantidad']) || 0);
+                }
+            });
+            const localesVenta = Object.keys(ventasPorLocal);
+            const cantVenta    = Object.values(ventasPorLocal);
+            drawHBarChart('chartVentasLocal', localesVenta, cantVenta, c);
+
+            // --- Inventario por local (pestaña RESUMEN) ---
+            const localesInv  = dataResumen.map(r => r['Local'] || '');
+            const stocks250   = dataResumen.map(r => parseInt(r['Stock 250 g']) || 0);
+            const stocks500   = dataResumen.map(r => parseInt(r['Stock 500 g']) || 0);
+            drawGroupedBar('chartInventarioLocal', localesInv, stocks250, stocks500, c);
+        }
+
+        /* ==========================================
+           UTILIDADES DE DOM
+        ========================================== */
+        function setText(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = val;
+        }
+
+        function capitalize(s) {
+            if (!s) return '';
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
+        /* ==========================================
+           CONSTRUCTORES DE GRÁFICOS
+        ========================================== */
+        function baseOptions(c, extraY = {}) {
+            return {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: c.text }, grid: { color: c.grid } },
+                    y: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid }, ...extraY }
+                }
+            };
+        }
+
+        function drawBarChart(id, labels, data, label, color, c) {
+            destroyChart('_chart_' + id);
+            window['_chart_' + id] = new Chart(document.getElementById(id), {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ label: 'Stock 500g', data: data500, backgroundColor: 'rgba(197, 160, 89, 0.8)', borderRadius: 6 }] },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                data: { labels, datasets: [{ label, data, backgroundColor: color, borderRadius: 5 }] },
+                options: {
+                    ...baseOptions(c),
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { display: false }
+                    },
+                    scales: {
+                        x: { ticks: { color: c.text }, grid: { display: false } },
+                        y: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid } }
+                    }
+                }
             });
         }
 
-        // Mock data en caso de que aún no existan los enlaces
-        function initChartsMock() {
+        function drawLineChart(id, labels, data, label, color, c) {
+            destroyChart('_chart_' + id);
+            window['_chart_' + id] = new Chart(document.getElementById(id), {
+                type: 'line',
+                data: { labels, datasets: [{ label, data, borderColor: color, backgroundColor: color + '20', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: color }] },
+                options: {
+                    ...baseOptions(c),
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: c.text }, grid: { display: false } },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: c.text,
+                                callback: v => formatK(v)
+                            },
+                            grid: { color: c.grid }
+                        }
+                    }
+                }
+            });
+        }
+
+        function drawHBarChart(id, labels, data, c) {
+            destroyChart('_chart_' + id);
+            const sorted = labels.map((l, i) => ({ l, v: data[i] })).sort((a, b) => b.v - a.v);
+            window['_chart_' + id] = new Chart(document.getElementById(id), {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(x => x.l),
+                    datasets: [{ data: sorted.map(x => x.v), backgroundColor: 'rgba(197,160,89,0.85)', borderRadius: 4 }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid } },
+                        y: { ticks: { color: c.text }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function drawGroupedBar(id, labels, data250, data500, c) {
+            destroyChart('_chart_' + id);
+            window['_chart_' + id] = new Chart(document.getElementById(id), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: '250g', data: data250, backgroundColor: 'rgba(197,160,89,0.85)', borderRadius: 4 },
+                        { label: '500g', data: data500, backgroundColor: 'rgba(96,165,250,0.85)',  borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: c.text }, grid: { display: false } },
+                        y: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid } }
+                    }
+                }
+            });
+        }
+
+        /* ==========================================
+           MOCK DATA (cuando no hay conexión)
+        ========================================== */
+        function loadMock() {
+            const c = chartColors();
+            Chart.defaults.color = c.text;
             const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-            drawCharts(meses, [8, 12, 10, 15, 18, 7], [4, 5, 8, 7, 10, 7]);
+
+            setText('kpi-ventas-total',   '28 bolsas');
+            setText('kpi-ventas-detalle', '250g: 16 | 500g: 12');
+            setText('kpi-ingresos-total',   '$784.000');
+            setText('kpi-ingresos-detalle', '250g: $352.000 | 500g: $432.000');
+            setText('kpi-inventario-total',   '47 bolsas');
+            setText('kpi-inventario-detalle', '250g: 29 | 500g: 18');
+            setText('kpi-stock-bajo', '2 locales');
+
+            drawBarChart('chart250',  meses, [1, 3, 6, 0, 1, 1], 'Bolsas 250g', c.green, c);
+            drawBarChart('chart500',  meses, [1, 3, 6, 0, 2, 1], 'Bolsas 500g', c.gold, c);
+            drawLineChart('chartIngresos', meses, [92000, 264000, 552000, 0, 176000, 104000], 'Ingresos', c.income, c);
+            drawHBarChart('chartVentasLocal', ['Local 1', 'Local 2', 'Local 3', 'Local 4'], [8, 13, 4, 3], c);
+            drawGroupedBar('chartInventarioLocal', ['Local 1', 'Local 2', 'Local 3', 'Local 4'], [7, 1, 5, 0], [4, 0, 2, 0], c);
         }
+
     </script>
 </body>
 </html>
