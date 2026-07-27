@@ -211,7 +211,7 @@
         const URL_GRAFICA_CSV    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=1308828455&single=true&output=csv";
         const URL_RESUMEN_CSV    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=874414878&single=true&output=csv";
         const URL_MOVIMIENTOS_CSV= "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=1434608398&single=true&output=csv";
-        const PROXY = "https://api.allorigins.win/raw?url=";
+        const FETCH_OPTS = { credentials: 'omit', cache: 'no-store' };
 
         /* ==========================================
            LOGIN
@@ -261,10 +261,13 @@
             };
 
             try {
+                const ts = Date.now();
+                const addTs = url => url + "&_=" + ts;
+
                 const [resG, resR, resM] = await Promise.all([
-                    fetch(PROXY + encodeURIComponent(URL_GRAFICA_CSV)),
-                    fetch(PROXY + encodeURIComponent(URL_RESUMEN_CSV)),
-                    fetch(PROXY + encodeURIComponent(URL_MOVIMIENTOS_CSV))
+                    fetch(addTs(URL_GRAFICA_CSV),     FETCH_OPTS),
+                    fetch(addTs(URL_RESUMEN_CSV),     FETCH_OPTS),
+                    fetch(addTs(URL_MOVIMIENTOS_CSV), FETCH_OPTS)
                 ]);
 
                 if (!resG.ok || !resR.ok || !resM.ok) throw new Error("Fetch failed");
