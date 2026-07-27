@@ -141,7 +141,7 @@
                     <p class="text-xs text-orange-400 mt-1 font-medium cursor-pointer hover:underline" id="kpi-stock-detalle">Ver detalles</p>
                 </div>
 
-                <!-- KPI 5: Precio por Kilo (hardcoded) -->
+                <!-- KPI 5: Precio por Kilo (Federación de Cafeteros) -->
                 <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-gold/40 dark:border-brand-gold/30 shadow-soft hover:border-brand-gold transition-colors">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="w-9 h-9 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-sm">
@@ -149,8 +149,8 @@
                         </div>
                         <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Precio por Kilo</p>
                     </div>
-                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white">$17.000</p>
-                    <p class="text-xs text-gray-400 mt-1">Precio actual del café</p>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="kpi-precio-kilo">...</p>
+                    <p class="text-xs text-gray-400 mt-1" id="kpi-precio-fecha">Consultando FNC...</p>
                 </div>
             </div>
 
@@ -211,6 +211,7 @@
         const URL_GRAFICA_CSV    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=1308828455&single=true&output=csv";
         const URL_RESUMEN_CSV    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=874414878&single=true&output=csv";
         const URL_MOVIMIENTOS_CSV= "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=1434608398&single=true&output=csv";
+        const URL_FNC            = "https://federaciondecafeteros.org/transparencia-fepc/";
         const FETCH_OPTS = { credentials: 'omit', cache: 'no-store' };
 
         /* ==========================================
@@ -235,7 +236,49 @@
             document.getElementById('password-input').addEventListener('keypress', e => {
                 if (e.key === 'Enter') checkPassword();
             });
+
+            // Cargar precio del café de forma independiente (no bloquea el dashboard)
+            fetchPrecioCafe();
         });
+
+        /* ==========================================
+           PRECIO CAFÉ (Federación de Cafeteros)
+        ========================================== */
+        async function fetchPrecioCafe() {
+            try {
+                // Usar allorigins para este sitio externo (diferente a Google Sheets)
+                const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(URL_FNC);
+                const res = await fetch(proxyUrl, { cache: 'no-store' });
+                if (!res.ok) throw new Error('No response');
+                const html = await res.text();
+
+                // Extraer el precio: buscar patrón "Precio interno de referencia: $X.XXX.XXX"
+                const precioMatch = html.match(/Precio interno de referencia:\s*\$([\d\.]+)/);
+                // Extraer la fecha del contenido: buscar "Fecha: YYYY-MM-DD"
+                const fechaMatch = html.match(/Fecha:\s*<\/strong>(\d{4}-\d{2}-\d{2})/);
+
+                if (!precioMatch) throw new Error('No se encontró precio');
+
+                const precioCarga = parseInt(precioMatch[1].replace(/\./g, ''));
+                const precioKg    = Math.round(precioCarga / 125);
+
+                // Formatear fecha legible
+                let fechaTexto = 'Fecha desconocida';
+                if (fechaMatch) {
+                    const [y, m, d] = fechaMatch[1].split('-');
+                    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                    fechaTexto = `Actualizado: ${d} ${meses[parseInt(m)-1]} ${y}`;
+                }
+
+                setText('kpi-precio-kilo',  '$' + precioKg.toLocaleString('es-CO'));
+                setText('kpi-precio-fecha', fechaTexto);
+
+            } catch (err) {
+                console.warn('No se pudo obtener precio FNC:', err.message);
+                setText('kpi-precio-kilo',  '$17.280'); // fallback con último valor conocido
+                setText('kpi-precio-fecha', 'Fuente: FNC (no disponible)');
+            }
+        }
 
         /* ==========================================
            FETCH Y RENDER
