@@ -197,6 +197,39 @@
 
         </main>
 
+        <!-- ===== SECCIÓN CLIENTES ESPECIALES Y MAYORISTAS ===== -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
+            <div class="flex items-center gap-2 mb-6 border-b border-brand-border dark:border-slate-700 pb-4">
+                <i class="fa-solid fa-truck-fast text-brand-gold text-xl"></i>
+                <h2 class="font-serif text-2xl font-bold dark:text-white">Estado de Clientes Especiales y Mayoristas</h2>
+            </div>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft overflow-hidden">
+                <div class="px-6 py-4 border-b border-brand-border dark:border-slate-700 bg-brand-bg dark:bg-slate-900 flex items-center justify-between">
+                    <h3 class="font-bold text-brand-dark dark:text-white">Cuentas y Pedidos Pendientes</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
+                                <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Fecha</th>
+                                <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Cliente / Local</th>
+                                <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Detalle del Pedido</th>
+                                <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Total Deuda</th>
+                                <th class="px-6 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Estado Pago</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-clientes" class="text-sm text-brand-dark dark:text-gray-200 divide-y divide-gray-100 dark:divide-slate-700">
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+                                    <i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando datos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <footer class="bg-white dark:bg-slate-900 border-t border-brand-border dark:border-slate-800 py-6 mt-auto transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-400">
                 Panel Administrativo Privado — El Vagón del Café
@@ -211,6 +244,7 @@
         const URL_GRAFICA_CSV    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=1308828455&single=true&output=csv";
         const URL_RESUMEN_CSV    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=874414878&single=true&output=csv";
         const URL_MOVIMIENTOS_CSV= "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=1434608398&single=true&output=csv";
+        const URL_CLIENTES_CSV   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2fqNAcymr3qDJce5kvI1KzEPZTyi5yyT2Gv2sMky7vFJVrFfsGoDu07NbJ43be4J6JBB_jk0MawjF/pub?gid=18217608&single=true&output=csv";
         const URL_FNC            = "https://federaciondecafeteros.org/transparencia-fepc/";
         const FETCH_OPTS = { credentials: 'omit', cache: 'no-store' };
 
@@ -307,10 +341,11 @@
                 const ts = Date.now();
                 const addTs = url => url + "&_=" + ts;
 
-                const [resG, resR, resM] = await Promise.all([
+                const [resG, resR, resM, resC] = await Promise.all([
                     fetch(addTs(URL_GRAFICA_CSV),     FETCH_OPTS),
                     fetch(addTs(URL_RESUMEN_CSV),     FETCH_OPTS),
-                    fetch(addTs(URL_MOVIMIENTOS_CSV), FETCH_OPTS)
+                    fetch(addTs(URL_MOVIMIENTOS_CSV), FETCH_OPTS),
+                    fetch(addTs(URL_CLIENTES_CSV),    FETCH_OPTS)
                 ]);
 
                 if (!resG.ok || !resR.ok || !resM.ok) throw new Error("Fetch failed");
@@ -320,10 +355,12 @@
                 const dataGrafica     = parse(await resG.text());
                 const dataResumen     = parse(await resR.text());
                 const dataMovimientos = parse(await resM.text());
+                const dataClientes    = resC.ok ? parse(await resC.text()) : [];
 
                 if (dataGrafica.length === 0 && dataResumen.length === 0) throw new Error("Sin datos");
 
                 renderDashboard(dataGrafica, dataResumen, dataMovimientos);
+                renderClientes(dataClientes);
                 setOk();
 
             } catch (err) {
@@ -548,6 +585,56 @@
                         y: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid } }
                     }
                 }
+            });
+        }
+
+        /* ==========================================
+           RENDER CLIENTES ESPECIALES
+        ========================================== */
+        function renderClientes(dataClientes) {
+            const tbody = document.getElementById('tbody-clientes');
+            if (!tbody) return;
+
+            if (!dataClientes || dataClientes.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">No hay registros en la tabla de clientes.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            dataClientes.forEach((row, i) => {
+                if (!row['Cliente'] && !row['Detalle']) return;
+
+                const estado     = (row['Estado'] || '').trim().toLowerCase();
+                const esDebe     = estado === 'debe' || estado === 'pendiente';
+                const badgeClass = esDebe
+                    ? 'bg-red-100 text-red-600 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800'
+                    : 'bg-green-100 text-green-600 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800';
+                const badgeLabel = esDebe ? 'Debe' : (row['Estado'] || 'Pagado');
+
+                // Iniciales del cliente para el avatar
+                const nombre     = (row['Cliente'] || 'C').trim();
+                const iniciales  = nombre.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+                // Formatear deuda
+                const deudaNum   = parseInt(String(row['Deuda'] || '0').replace(/[^0-9]/g, '')) || 0;
+                const deudaFmt   = deudaNum > 0 ? '$' + deudaNum.toLocaleString('es-CO') : '-';
+
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-brand-lightGreen/10 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400">${row['Fecha'] || '-'}</td>
+                        <td class="px-6 py-4 font-medium">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-brand-green dark:bg-brand-gold text-white dark:text-slate-900 flex items-center justify-center text-xs font-bold flex-shrink-0">${iniciales}</div>
+                                <span class="text-brand-dark dark:text-white">${nombre}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${row['Detalle'] || '-'}</td>
+                        <td class="px-6 py-4 font-bold text-brand-dark dark:text-brand-gold">${deudaFmt}</td>
+                        <td class="px-6 py-4">
+                            <span class="${badgeClass} px-3 py-1 rounded-full text-xs font-bold border">${badgeLabel}</span>
+                        </td>
+                    </tr>
+                `);
             });
         }
 
