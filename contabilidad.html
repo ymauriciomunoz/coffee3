@@ -277,42 +277,90 @@
 
         /* ==========================================
            PRECIO CAFÉ (Federación de Cafeteros)
+           Intenta 4 proxies en cascada con timeout
         ========================================== */
         async function fetchPrecioCafe() {
-            try {
-                // Usar allorigins para este sitio externo (diferente a Google Sheets)
-                const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(URL_FNC);
-                const res = await fetch(proxyUrl, { cache: 'no-store' });
-                if (!res.ok) throw new Error('No response');
-                const html = await res.text();
+            const FNC_URL = "https://federaciondecafeteros.org/transparencia-fepc/";
 
-                // Extraer el precio: buscar patrón "Precio interno de referencia: $X.XXX.XXX"
-                const precioMatch = html.match(/Precio interno de referencia:\s*\$([\d\.]+)/);
-                // Extraer la fecha del contenido: buscar "Fecha: YYYY-MM-DD"
-                const fechaMatch = html.match(/Fecha:\s*<\/strong>(\d{4}-\d{2}-\d{2})/);
+            // Proxies en orden de preferencia
+            const proxies = [
+                url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+                url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,  // JSON wrapper
+                url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                url => `https://thingproxy.freeboard.io/fetch/${url}`,
+            ];
 
-                if (!precioMatch) throw new Error('No se encontró precio');
-
-                const precioCarga = parseInt(precioMatch[1].replace(/\./g, ''));
-                const precioKg    = Math.round(precioCarga / 125);
-
-                // Formatear fecha legible
-                let fechaTexto = 'Fecha desconocida';
-                if (fechaMatch) {
-                    const [y, m, d] = fechaMatch[1].split('-');
-                    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-                    fechaTexto = `Actualizado: ${d} ${meses[parseInt(m)-1]} ${y}`;
+            // Fetch con timeout de 6 segundos
+            async function fetchWithTimeout(url, ms = 6000) {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), ms);
+                try {
+                    const res = await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+                    clearTimeout(timer);
+                    return res;
+                } catch (e) {
+                    clearTimeout(timer);
+                    throw e;
                 }
-
-                setText('kpi-precio-kilo',  '$' + precioKg.toLocaleString('es-CO'));
-                setText('kpi-precio-fecha', fechaTexto);
-
-            } catch (err) {
-                console.warn('No se pudo obtener precio FNC:', err.message);
-                setText('kpi-precio-kilo',  '$17.280'); // fallback con último valor conocido
-                setText('kpi-precio-fecha', 'Fuente: FNC (no disponible)');
             }
+
+            function extractPrice(html) {
+                // El precio está en el menú: "Precio interno de referencia: $2.210.000"
+                const m = html.match(/Precio interno de referencia[:\s]+\$\s*([\d\.]+)/i);
+                if (!m) return null;
+                return parseInt(m[1].replace(/\./g, ''));
+            }
+
+            function extractFecha(html) {
+                // Busca "Fecha: </strong>2026-07-27" o "Fecha: 2026-07-27"
+                const m = html.match(/Fecha[:\s]*<\/strong>\s*(\d{4}-\d{2}-\d{2})/i)
+                       || html.match(/Fecha[:\s]+(\d{4}-\d{2}-\d{2})/i);
+                return m ? m[1] : null;
+            }
+
+            function formatFecha(iso) {
+                if (!iso) return 'FNC · hoy';
+                const [y, m, d] = iso.split('-');
+                const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                return `FNC · ${d} ${meses[parseInt(m)-1]} ${y}`;
+            }
+
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    const proxyUrl = proxies[i](FNC_URL);
+                    console.log(`[FNC] Intentando proxy ${i+1}:`, proxyUrl);
+                    const res = await fetchWithTimeout(proxyUrl, 7000);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                    let html = await res.text();
+
+                    // Si el proxy devuelve JSON (allorigins /get), extraer contents
+                    if (html.trim().startsWith('{')) {
+                        try { html = JSON.parse(html).contents || html; } catch(_) {}
+                    }
+
+                    const precioCarga = extractPrice(html);
+                    if (!precioCarga) throw new Error('Precio no encontrado en respuesta');
+
+                    const precioKg = Math.round(precioCarga / 125);
+                    const fecha    = extractFecha(html);
+
+                    setText('kpi-precio-kilo',  '$' + precioKg.toLocaleString('es-CO'));
+                    setText('kpi-precio-fecha', formatFecha(fecha));
+                    console.log(`[FNC] ✅ Precio obtenido vía proxy ${i+1}: $${precioKg}/kg`);
+                    return; // Éxito — salir
+
+                } catch (err) {
+                    console.warn(`[FNC] Proxy ${i+1} falló:`, err.message);
+                }
+            }
+
+            // Todos los proxies fallaron — usar valor conocido
+            console.error('[FNC] Todos los proxies fallaron. Usando fallback.');
+            setText('kpi-precio-kilo',  '$17.680');
+            setText('kpi-precio-fecha', 'FNC · sin conexión');
         }
+
 
         /* ==========================================
            FETCH Y RENDER
