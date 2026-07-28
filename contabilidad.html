@@ -16,6 +16,30 @@
     <!-- PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
+    <style>
+        .tab-btn { border-bottom: 2px solid transparent; }
+        .active-tab {
+            background: white;
+            color: #1A4331;
+            border-color: #C5A059;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+        }
+        .dark .active-tab {
+            background: #1e293b;
+            color: #C5A059;
+            border-color: #C5A059;
+        }
+        .inactive-tab {
+            background: transparent;
+            color: #9ca3af;
+        }
+        .inactive-tab:hover {
+            color: #1A4331;
+            background: rgba(26,67,49,0.05);
+        }
+        .dark .inactive-tab:hover { color: #C5A059; }
+    </style>
+
     <script>
         // Evitar destello blanco al cargar
         const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -27,6 +51,9 @@
             document.querySelectorAll('.dark-mode-icon').forEach(icon => {
                 icon.className = isCurrentlyDark ? 'fa-solid fa-sun dark-mode-icon' : 'fa-solid fa-moon dark-mode-icon';
             });
+            // Rerender charts for dark/light palette
+            if (window._lastDataGrafica) renderDashboard(window._lastDataGrafica, window._lastDataResumen, window._lastDataMovimientos);
+            if (window._lastDataGrafica) renderHistorico(window._lastDataGrafica);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -66,7 +93,7 @@
                     <div class="h-10 w-10 rounded-full overflow-hidden bg-brand-bg dark:bg-slate-800 border border-gray-100 dark:border-slate-700 flex items-center justify-center text-brand-green dark:text-brand-gold">
                         <i class="fa-solid fa-chart-pie"></i>
                     </div>
-                    <span class="font-serif font-bold text-xl dark:text-white hidden sm:inline">Resumen General</span>
+                    <span class="font-serif font-bold text-xl dark:text-white hidden sm:inline">El Vagón del Café</span>
 
                     <!-- Foco de Estado -->
                     <div class="ml-4 flex items-center gap-2 px-3 py-1 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full shadow-sm" id="data-status-container">
@@ -86,8 +113,26 @@
                     </a>
                 </div>
             </div>
+
+            <!-- ===== TABS NAV ===== -->
+            <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3 flex gap-1" id="tabs-nav" role="tablist">
+                <button id="tab-btn-resumen"
+                    onclick="switchTab('resumen')"
+                    role="tab" aria-selected="true"
+                    class="tab-btn active-tab px-5 py-2 rounded-t-xl text-sm font-bold transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie"></i> Resumen General
+                </button>
+                <button id="tab-btn-historico"
+                    onclick="switchTab('historico')"
+                    role="tab" aria-selected="false"
+                    class="tab-btn inactive-tab px-5 py-2 rounded-t-xl text-sm font-bold transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Histórico &amp; Ganancias
+                </button>
+            </nav>
         </header>
 
+        <!-- ===== TAB: RESUMEN ===== -->
+        <div id="tab-panel-resumen" role="tabpanel" class="flex-1 flex flex-col">
         <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
 
             <!-- ===== 5 KPI CARDS ===== -->
@@ -229,6 +274,108 @@
                 </div>
             </div>
         </section>
+        </div><!-- /tab-panel-resumen -->
+
+        <!-- ===== TAB: HISTÓRICO & GANANCIAS ===== -->
+        <div id="tab-panel-historico" role="tabpanel" class="hidden flex-1 flex flex-col">
+        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+
+            <!-- KPIs Históricos -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                <!-- Ingresos Acumulados -->
+                <div class="col-span-2 md:col-span-1 bg-gradient-to-br from-brand-green to-emerald-700 dark:from-emerald-800 dark:to-emerald-900 p-5 rounded-2xl shadow-soft text-white">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-sack-dollar text-emerald-300 text-sm"></i>
+                        <p class="text-[10px] text-emerald-200 uppercase tracking-wider font-bold">Ingresos Acumulados</p>
+                    </div>
+                    <p class="text-3xl font-serif font-bold" id="hist-ingresos-total">-</p>
+                    <p class="text-xs text-emerald-200 mt-1">Desde el primer registro</p>
+                </div>
+
+                <!-- Bolsas Totales Vendidas -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Total Bolsas</p>
+                    </div>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="hist-bolsas-total">-</p>
+                    <p class="text-xs text-gray-400 mt-1" id="hist-bolsas-detalle">250g: - | 500g: -</p>
+                </div>
+
+                <!-- Mejor Mes -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-500 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Mejor Mes</p>
+                    </div>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="hist-mejor-mes">-</p>
+                    <p class="text-xs text-gray-400 mt-1" id="hist-mejor-mes-val">en ingresos</p>
+                </div>
+
+                <!-- Promedio Mensual -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-400 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Promedio / Mes</p>
+                    </div>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="hist-promedio">-</p>
+                    <p class="text-xs text-gray-400 mt-1" id="hist-meses-activos">- meses con ventas</p>
+                </div>
+            </div>
+
+            <!-- Gráfico de Acumulación -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Progreso financiero</p>
+                        <h3 class="font-serif font-bold text-xl text-brand-dark dark:text-white">Ingresos Acumulados en el Tiempo</h3>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-gray-500">
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm inline-block bg-emerald-500"></span> Acumulado</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm inline-block bg-brand-gold"></span> Por mes</span>
+                    </div>
+                </div>
+                <canvas id="chartAcumulado" height="100"></canvas>
+            </div>
+
+            <!-- Tabla Histórica Mensual -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft overflow-hidden">
+                <div class="px-6 py-4 border-b border-brand-border dark:border-slate-700 bg-brand-bg dark:bg-slate-900 flex items-center justify-between">
+                    <h3 class="font-bold text-brand-dark dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-table-list text-brand-gold"></i>
+                        Desglose Mensual Completo
+                    </h3>
+                    <span class="text-xs text-gray-400" id="hist-tabla-periodo"></span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
+                                <th class="px-5 py-4 font-bold border-b border-gray-200 dark:border-slate-700">Mes</th>
+                                <th class="px-5 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-right">Bolsas 250g</th>
+                                <th class="px-5 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-right">Bolsas 500g</th>
+                                <th class="px-5 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-right">Total Bolsas</th>
+                                <th class="px-5 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-right">Ingresos Mes</th>
+                                <th class="px-5 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-right">Acumulado</th>
+                                <th class="px-5 py-4 font-bold border-b border-gray-200 dark:border-slate-700 text-center">Tendencia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-historico" class="text-sm text-brand-dark dark:text-gray-200 divide-y divide-gray-100 dark:divide-slate-700">
+                            <tr><td colspan="7" class="px-6 py-8 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+        </div><!-- /tab-panel-historico -->
 
         <footer class="bg-white dark:bg-slate-900 border-t border-brand-border dark:border-slate-800 py-6 mt-auto transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-400">
@@ -274,6 +421,32 @@
             // Cargar precio del café de forma independiente (no bloquea el dashboard)
             fetchPrecioCafe();
         });
+
+        /* ==========================================
+           TAB SWITCHER
+        ========================================== */
+        function switchTab(name) {
+            ['resumen', 'historico'].forEach(t => {
+                const panel = document.getElementById(`tab-panel-${t}`);
+                const btn   = document.getElementById(`tab-btn-${t}`);
+                if (t === name) {
+                    panel.classList.remove('hidden');
+                    btn.classList.remove('inactive-tab');
+                    btn.classList.add('active-tab');
+                    btn.setAttribute('aria-selected', 'true');
+                } else {
+                    panel.classList.add('hidden');
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('inactive-tab');
+                    btn.setAttribute('aria-selected', 'false');
+                }
+            });
+            // Render histórico on first open (or re-render on dark mode change)
+            if (name === 'historico' && window._lastDataGrafica) {
+                renderHistorico(window._lastDataGrafica);
+            }
+        }
+
 
         /* ==========================================
            PRECIO CAFÉ (Federación de Cafeteros)
@@ -407,7 +580,13 @@
 
                 if (dataGrafica.length === 0 && dataResumen.length === 0) throw new Error("Sin datos");
 
+                // Cache globally for tab switching and dark mode re-renders
+                window._lastDataGrafica     = dataGrafica;
+                window._lastDataResumen     = dataResumen;
+                window._lastDataMovimientos = dataMovimientos;
+
                 renderDashboard(dataGrafica, dataResumen, dataMovimientos);
+                renderHistorico(dataGrafica);
                 renderClientes(dataClientes);
                 setOk();
 
@@ -634,6 +813,174 @@
                     }
                 }
             });
+        }
+
+        /* ==========================================
+           RENDER HISTÓRICO & GANANCIAS
+        ========================================== */
+        let _chartAcumulado = null;
+
+        function renderHistorico(dataGrafica) {
+            if (!dataGrafica || dataGrafica.length === 0) return;
+            const c = chartColors();
+
+            // Build monthly data array (only rows with valid data)
+            const meses = dataGrafica.map(r => {
+                const mes = (r['Mes'] || r['Periodo'] || '').trim();
+                return mes.charAt(0).toUpperCase() + mes.slice(1);
+            });
+
+            const v250     = dataGrafica.map(r => parseInt(r['Ventas_250g'])  || 0);
+            const v500     = dataGrafica.map(r => parseInt(r['Ventas_500g'])  || 0);
+            const vtotal   = dataGrafica.map(r => (parseInt(r['Ventas_250g']) || 0) + (parseInt(r['Ventas_500g']) || 0));
+            const ingresos = dataGrafica.map(r => parseMoney(r['Ingresos_total']));
+
+            // Cumulative ingresos
+            let acum = 0;
+            const acumulado = ingresos.map(v => { acum += v; return acum; });
+
+            // ── KPIs ──
+            const totalIngresos   = acum;
+            const total250        = v250.reduce((a, b) => a + b, 0);
+            const total500        = v500.reduce((a, b) => a + b, 0);
+            const totalBolsas     = total250 + total500;
+            const mesesConVentas  = ingresos.filter(v => v > 0).length;
+            const promedioMes     = mesesConVentas > 0 ? Math.round(totalIngresos / mesesConVentas) : 0;
+            const maxIngreso      = Math.max(...ingresos);
+            const idxMax          = ingresos.indexOf(maxIngreso);
+            const mejorMes        = idxMax >= 0 ? meses[idxMax] : '-';
+
+            setText('hist-ingresos-total',   formatMoney(totalIngresos));
+            setText('hist-bolsas-total',     `${totalBolsas} bolsas`);
+            setText('hist-bolsas-detalle',   `250g: ${total250} | 500g: ${total500}`);
+            setText('hist-mejor-mes',        mejorMes);
+            setText('hist-mejor-mes-val',    maxIngreso > 0 ? formatMoney(maxIngreso) : 'Sin datos aún');
+            setText('hist-promedio',         formatMoney(promedioMes));
+            setText('hist-meses-activos',    `${mesesConVentas} mes${mesesConVentas !== 1 ? 'es' : ''} con ventas`);
+
+            // Período label
+            const primerMes = meses[0] || '';
+            const ultimoMes = meses[meses.length - 1] || '';
+            setText('hist-tabla-periodo', primerMes && ultimoMes ? `${primerMes} → ${ultimoMes}` : '');
+
+            // ── Gráfico Acumulado (Area + Bar) ──
+            if (_chartAcumulado) { _chartAcumulado.destroy(); _chartAcumulado = null; }
+            const ctx = document.getElementById('chartAcumulado');
+            if (ctx) {
+                _chartAcumulado = new Chart(ctx.getContext('2d'), {
+                    data: {
+                        labels: meses,
+                        datasets: [
+                            {
+                                type: 'line',
+                                label: 'Acumulado',
+                                data: acumulado,
+                                borderColor: '#22c55e',
+                                backgroundColor: 'rgba(34,197,94,0.12)',
+                                borderWidth: 2.5,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#22c55e',
+                                yAxisID: 'yAcum',
+                            },
+                            {
+                                type: 'bar',
+                                label: 'Por mes',
+                                data: ingresos,
+                                backgroundColor: 'rgba(197,160,89,0.75)',
+                                borderRadius: 6,
+                                yAxisID: 'yMes',
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `${ctx.dataset.label}: ${formatMoney(ctx.parsed.y)}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { color: c.grid }, ticks: { color: c.text } },
+                            yAcum: {
+                                position: 'left',
+                                grid: { color: c.grid },
+                                ticks: { color: '#22c55e', callback: v => formatMoney(v) },
+                                title: { display: true, text: 'Acumulado', color: '#22c55e', font: { size: 11 } }
+                            },
+                            yMes: {
+                                position: 'right',
+                                grid: { drawOnChartArea: false },
+                                ticks: { color: c.gold || '#C5A059', callback: v => formatMoney(v) },
+                                title: { display: true, text: 'Mes', color: '#C5A059', font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // ── Tabla Mensual ──
+            const tbody = document.getElementById('tbody-historico');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            dataGrafica.forEach((r, i) => {
+                const mes       = meses[i];
+                const b250      = v250[i];
+                const b500      = v500[i];
+                const btot      = vtotal[i];
+                const ingMes    = ingresos[i];
+                const ingAcum   = acumulado[i];
+                const prevIngr  = i > 0 ? ingresos[i - 1] : null;
+
+                // Tendencia
+                let tendencia = '';
+                if (prevIngr !== null && ingMes > 0) {
+                    if (ingMes > prevIngr) tendencia = '<span class="text-emerald-500 font-bold">▲</span>';
+                    else if (ingMes < prevIngr) tendencia = '<span class="text-red-400 font-bold">▼</span>';
+                    else tendencia = '<span class="text-gray-400">─</span>';
+                } else if (ingMes === 0) {
+                    tendencia = '<span class="text-gray-300 dark:text-slate-600">·</span>';
+                }
+
+                // Row highlight for best month
+                const isBest   = ingMes === maxIngreso && maxIngreso > 0;
+                const rowClass  = isBest
+                    ? 'bg-amber-50 dark:bg-amber-900/20 font-semibold'
+                    : 'hover:bg-brand-lightGreen/10 dark:hover:bg-slate-700/50 transition-colors';
+
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="${rowClass}">
+                        <td class="px-5 py-3 font-medium text-brand-dark dark:text-white">
+                            ${mes}${isBest ? ' <span class="ml-1 text-xs text-amber-500">🏆</span>' : ''}
+                        </td>
+                        <td class="px-5 py-3 text-right tabular-nums">${b250}</td>
+                        <td class="px-5 py-3 text-right tabular-nums">${b500}</td>
+                        <td class="px-5 py-3 text-right tabular-nums font-medium">${btot}</td>
+                        <td class="px-5 py-3 text-right tabular-nums ${ingMes > 0 ? 'text-brand-dark dark:text-white font-bold' : 'text-gray-300 dark:text-slate-600'}">${ingMes > 0 ? formatMoney(ingMes) : '—'}</td>
+                        <td class="px-5 py-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400 font-bold">${formatMoney(ingAcum)}</td>
+                        <td class="px-5 py-3 text-center">${tendencia}</td>
+                    </tr>
+                `);
+            });
+
+            // Totals row
+            tbody.insertAdjacentHTML('beforeend', `
+                <tr class="bg-brand-dark dark:bg-slate-700 text-white font-bold text-sm">
+                    <td class="px-5 py-4">TOTAL</td>
+                    <td class="px-5 py-4 text-right tabular-nums">${total250}</td>
+                    <td class="px-5 py-4 text-right tabular-nums">${total500}</td>
+                    <td class="px-5 py-4 text-right tabular-nums">${totalBolsas}</td>
+                    <td class="px-5 py-4 text-right tabular-nums text-brand-gold">${formatMoney(totalIngresos)}</td>
+                    <td class="px-5 py-4 text-right tabular-nums text-emerald-400">${formatMoney(totalIngresos)}</td>
+                    <td class="px-5 py-4"></td>
+                </tr>
+            `);
         }
 
         /* ==========================================
