@@ -291,6 +291,9 @@
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft overflow-hidden">
                 <div class="px-6 py-4 border-b border-brand-border dark:border-slate-700 bg-brand-bg dark:bg-slate-900 flex items-center justify-between">
                     <h3 class="font-bold text-brand-dark dark:text-white">Cuentas y Pedidos Pendientes</h3>
+                    <button onclick="toggleFilaCliente()" class="px-4 py-1.5 bg-brand-gold hover:bg-amber-600 text-white text-xs font-bold rounded-full transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Nuevo Pedido
+                    </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -304,6 +307,22 @@
                             </tr>
                         </thead>
                         <tbody id="tbody-clientes" class="text-sm text-brand-dark dark:text-gray-200 divide-y divide-gray-100 dark:divide-slate-700">
+                            <!-- Fila de Nuevo Cliente (Oculta por defecto) -->
+                            <tr id="fila-nuevo-cliente" class="hidden bg-amber-50/50 dark:bg-amber-900/20">
+                                <td class="px-3 py-3"><input type="date" id="nc-fecha" class="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none focus:border-brand-gold"></td>
+                                <td class="px-3 py-3"><input type="text" id="nc-cliente" placeholder="Ej: Juancho" class="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none focus:border-brand-gold"></td>
+                                <td class="px-3 py-3"><input type="text" id="nc-detalle" placeholder="Ej: 5 bolsas 250g" class="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none focus:border-brand-gold"></td>
+                                <td class="px-3 py-3"><input type="number" id="nc-deuda" placeholder="Ej: 154000" class="w-full px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none focus:border-brand-gold"></td>
+                                <td class="px-3 py-3 flex items-center gap-2">
+                                    <select id="nc-estado" class="px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm focus:outline-none focus:border-brand-gold">
+                                        <option value="Debe">Debe</option>
+                                        <option value="Pagado">Pagado</option>
+                                    </select>
+                                    <button onclick="submitNuevoCliente()" id="btn-submit-cliente" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold text-xs transition-colors flex items-center justify-center min-w-[70px]">
+                                        Guardar
+                                    </button>
+                                </td>
+                            </tr>
                             <tr>
                                 <td colspan="5" class="px-6 py-8 text-center text-gray-400">
                                     <i class="fa-solid fa-spinner fa-spin mr-2"></i>Cargando datos...
@@ -1489,8 +1508,92 @@
                             <span class="${badgeClass} px-3 py-1 rounded-full text-xs font-bold border">${badgeLabel}</span>
                         </td>
                     </tr>
-                `);
+                });
             });
+        }
+
+        // --- LÓGICA DE NUEVO CLIENTE ---
+        function toggleFilaCliente() {
+            const fila = document.getElementById('fila-nuevo-cliente');
+            if (fila) {
+                fila.classList.toggle('hidden');
+                if (!fila.classList.contains('hidden')) {
+                    // Poner fecha de hoy
+                    const hoy = new Date();
+                    const yyyy = hoy.getFullYear();
+                    const mm   = String(hoy.getMonth() + 1).padStart(2, '0');
+                    const dd   = String(hoy.getDate()).padStart(2, '0');
+                    const elFecha = document.getElementById('nc-fecha');
+                    if (elFecha && !elFecha.value) elFecha.value = `${yyyy}-${mm}-${dd}`;
+                }
+            }
+        }
+
+        async function submitNuevoCliente() {
+            const btn = document.getElementById('btn-submit-cliente');
+            const fechaRaw = document.getElementById('nc-fecha').value;
+            const cliente  = document.getElementById('nc-cliente').value.trim();
+            const detalle  = document.getElementById('nc-detalle').value.trim();
+            const deuda    = document.getElementById('nc-deuda').value;
+            const estado   = document.getElementById('nc-estado').value;
+
+            if (!fechaRaw || !cliente || !detalle || !deuda) {
+                alert("Por favor completa todos los campos del pedido.");
+                return;
+            }
+
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGAR_URL')) {
+                alert("Apps Script URL no configurada.");
+                return;
+            }
+
+            const [yyyy, mm, dd] = fechaRaw.split('-');
+            const fechaFormateada = `${dd}/${mm}/${yyyy}`;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            try {
+                const payload = {
+                    accion:   "cliente",
+                    fecha:    fechaFormateada,
+                    cliente:  cliente,
+                    detalle:  detalle,
+                    deuda:    parseInt(deuda) || 0,
+                    estado:   estado
+                };
+
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload),
+                });
+
+                // Ocultar fila y limpiar
+                toggleFilaCliente();
+                document.getElementById('nc-cliente').value = '';
+                document.getElementById('nc-detalle').value = '';
+                document.getElementById('nc-deuda').value = '';
+                document.getElementById('nc-estado').value = 'Debe';
+                
+                // Mostrar un pequeño aviso en la UI (usando el btn existente como indicador)
+                const originalBtnHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                btn.classList.replace('bg-emerald-500', 'bg-green-600');
+                
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Guardar';
+                    btn.classList.replace('bg-green-600', 'bg-emerald-500');
+                    alert("Pedido guardado exitosamente.");
+                }, 1500);
+
+            } catch (err) {
+                alert("Error: " + err.message);
+                btn.disabled = false;
+                btn.innerHTML = 'Guardar';
+            }
         }
 
         /* ==========================================
