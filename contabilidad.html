@@ -278,55 +278,101 @@
 
         <!-- ===== TAB: HISTÓRICO & GANANCIAS ===== -->
         <div id="tab-panel-historico" role="tabpanel" class="hidden flex-1 flex flex-col">
-        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+        <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
 
-            <!-- KPIs Históricos -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- ── SELECTOR DE MESES ── -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft p-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <i class="fa-solid fa-calendar-days text-brand-gold"></i>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Selecciona un período</span>
+                </div>
+                <div id="month-pills" class="flex flex-wrap gap-2">
+                    <!-- Generado por JS -->
+                </div>
+            </div>
 
-                <!-- Ingresos Acumulados -->
-                <div class="col-span-2 md:col-span-1 bg-gradient-to-br from-brand-green to-emerald-700 dark:from-emerald-800 dark:to-emerald-900 p-5 rounded-2xl shadow-soft text-white">
+            <!-- ── KPIs (cambian según selección) ── -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="hist-kpi-grid">
+
+                <!-- KPI 1: Ingresos (verde grande) -->
+                <div class="col-span-2 md:col-span-1 bg-gradient-to-br from-brand-green to-emerald-700 dark:from-emerald-800 dark:to-emerald-900 p-5 rounded-2xl shadow-soft text-white transition-all duration-300">
                     <div class="flex items-center gap-2 mb-3">
                         <i class="fa-solid fa-sack-dollar text-emerald-300 text-sm"></i>
-                        <p class="text-[10px] text-emerald-200 uppercase tracking-wider font-bold">Ingresos Acumulados</p>
+                        <p class="text-[10px] text-emerald-200 uppercase tracking-wider font-bold" id="hist-kpi1-label">Ingresos Acumulados</p>
                     </div>
-                    <p class="text-3xl font-serif font-bold" id="hist-ingresos-total">-</p>
-                    <p class="text-xs text-emerald-200 mt-1">Desde el primer registro</p>
+                    <p class="text-3xl font-serif font-bold transition-all duration-300" id="hist-ingresos-total">-</p>
+                    <p class="text-xs text-emerald-200 mt-1" id="hist-kpi1-sub">Desde el primer registro</p>
                 </div>
 
-                <!-- Bolsas Totales Vendidas -->
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                <!-- KPI 2: Bolsas -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft transition-all duration-300">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="w-8 h-8 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-sm">
                             <i class="fa-solid fa-bag-shopping"></i>
                         </div>
-                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Total Bolsas</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold" id="hist-kpi2-label">Total Bolsas</p>
                     </div>
-                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="hist-bolsas-total">-</p>
-                    <p class="text-xs text-gray-400 mt-1" id="hist-bolsas-detalle">250g: - | 500g: -</p>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white transition-all duration-300" id="hist-bolsas-total">-</p>
+                    <p class="text-xs text-gray-400 mt-1 transition-all duration-300" id="hist-bolsas-detalle">250g: - | 500g: -</p>
                 </div>
 
-                <!-- Mejor Mes -->
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                <!-- KPI 3: Mejor mes / vs anterior -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft transition-all duration-300">
                     <div class="flex items-center gap-2 mb-3">
-                        <div class="w-8 h-8 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-500 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-trophy"></i>
+                        <div class="w-8 h-8 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-500 flex items-center justify-center text-sm" id="hist-kpi3-icon-wrap">
+                            <i class="fa-solid fa-trophy" id="hist-kpi3-icon"></i>
                         </div>
-                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Mejor Mes</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold" id="hist-kpi3-label">Mejor Mes</p>
                     </div>
-                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="hist-mejor-mes">-</p>
-                    <p class="text-xs text-gray-400 mt-1" id="hist-mejor-mes-val">en ingresos</p>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white transition-all duration-300" id="hist-mejor-mes">-</p>
+                    <p class="text-xs text-gray-400 mt-1 transition-all duration-300" id="hist-mejor-mes-val">en ingresos</p>
                 </div>
 
-                <!-- Promedio Mensual -->
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft">
+                <!-- KPI 4: Promedio / acumulado -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft transition-all duration-300">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-400 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-chart-line"></i>
+                            <i class="fa-solid fa-chart-line" id="hist-kpi4-icon"></i>
                         </div>
-                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Promedio / Mes</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold" id="hist-kpi4-label">Promedio / Mes</p>
                     </div>
-                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white" id="hist-promedio">-</p>
-                    <p class="text-xs text-gray-400 mt-1" id="hist-meses-activos">- meses con ventas</p>
+                    <p class="text-2xl font-serif font-bold text-brand-dark dark:text-white transition-all duration-300" id="hist-promedio">-</p>
+                    <p class="text-xs text-gray-400 mt-1 transition-all duration-300" id="hist-meses-activos">- meses con ventas</p>
+                </div>
+            </div>
+
+            <!-- ── PANEL DETALLE MES (oculto por defecto, visible al seleccionar un mes) ── -->
+            <div id="hist-detalle-mes" class="hidden">
+                <div class="rounded-2xl border-2 border-brand-gold/50 bg-gradient-to-r from-amber-50 to-white dark:from-slate-800 dark:to-slate-800 dark:border-brand-gold/30 p-6 shadow-soft">
+                    <div class="flex flex-wrap items-center gap-4 mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-brand-gold/20 text-brand-gold flex items-center justify-center">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 uppercase tracking-wider font-bold">Detalle del mes</p>
+                                <h3 class="font-serif font-bold text-xl text-brand-dark dark:text-white" id="detalle-mes-titulo">-</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-600">
+                            <p class="text-xs text-gray-400 mb-1 uppercase tracking-wider">Bolsas 250g</p>
+                            <p class="text-2xl font-bold text-brand-dark dark:text-white" id="detalle-v250">-</p>
+                        </div>
+                        <div class="text-center p-4 bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-600">
+                            <p class="text-xs text-gray-400 mb-1 uppercase tracking-wider">Bolsas 500g</p>
+                            <p class="text-2xl font-bold text-brand-dark dark:text-white" id="detalle-v500">-</p>
+                        </div>
+                        <div class="text-center p-4 bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-600">
+                            <p class="text-xs text-gray-400 mb-1 uppercase tracking-wider">Ingresos del Mes</p>
+                            <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400" id="detalle-ingresos">-</p>
+                        </div>
+                        <div class="text-center p-4 bg-white dark:bg-slate-700 rounded-xl border border-gray-100 dark:border-slate-600">
+                            <p class="text-xs text-gray-400 mb-1 uppercase tracking-wider">vs Mes Anterior</p>
+                            <p class="text-2xl font-bold" id="detalle-vs-anterior">-</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -335,7 +381,7 @@
                 <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Progreso financiero</p>
-                        <h3 class="font-serif font-bold text-xl text-brand-dark dark:text-white">Ingresos Acumulados en el Tiempo</h3>
+                        <h3 class="font-serif font-bold text-xl text-brand-dark dark:text-white" id="hist-chart-title">Ingresos Acumulados en el Tiempo</h3>
                     </div>
                     <div class="flex items-center gap-3 text-xs text-gray-500">
                         <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm inline-block bg-emerald-500"></span> Acumulado</span>
@@ -376,6 +422,7 @@
 
         </main>
         </div><!-- /tab-panel-historico -->
+
 
         <footer class="bg-white dark:bg-slate-900 border-t border-brand-border dark:border-slate-800 py-6 mt-auto transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-400">
@@ -816,57 +863,135 @@
         }
 
         /* ==========================================
-           RENDER HISTÓRICO & GANANCIAS
+           RENDER HISTÓRICO & GANANCIAS (dinámico)
         ========================================== */
-        let _chartAcumulado = null;
+        let _chartAcumulado  = null;
+        let _histData        = null;   // cache para selectMonth
+        let _selectedMthIdx  = null;   // null = Todos
 
         function renderHistorico(dataGrafica) {
             if (!dataGrafica || dataGrafica.length === 0) return;
+            _histData = dataGrafica;
+
             const c = chartColors();
 
-            // Build monthly data array (only rows with valid data)
-            const meses = dataGrafica.map(r => {
-                const mes = (r['Mes'] || r['Periodo'] || '').trim();
-                return mes.charAt(0).toUpperCase() + mes.slice(1);
-            });
-
+            const meses    = dataGrafica.map(r => capitalize((r['Mes'] || r['Periodo'] || '').trim()));
             const v250     = dataGrafica.map(r => parseInt(r['Ventas_250g'])  || 0);
             const v500     = dataGrafica.map(r => parseInt(r['Ventas_500g'])  || 0);
-            const vtotal   = dataGrafica.map(r => (parseInt(r['Ventas_250g']) || 0) + (parseInt(r['Ventas_500g']) || 0));
+            const vtotal   = v250.map((v, i) => v + v500[i]);
             const ingresos = dataGrafica.map(r => parseMoney(r['Ingresos_total']));
 
-            // Cumulative ingresos
             let acum = 0;
             const acumulado = ingresos.map(v => { acum += v; return acum; });
 
-            // ── KPIs ──
-            const totalIngresos   = acum;
-            const total250        = v250.reduce((a, b) => a + b, 0);
-            const total500        = v500.reduce((a, b) => a + b, 0);
-            const totalBolsas     = total250 + total500;
-            const mesesConVentas  = ingresos.filter(v => v > 0).length;
-            const promedioMes     = mesesConVentas > 0 ? Math.round(totalIngresos / mesesConVentas) : 0;
-            const maxIngreso      = Math.max(...ingresos);
-            const idxMax          = ingresos.indexOf(maxIngreso);
-            const mejorMes        = idxMax >= 0 ? meses[idxMax] : '-';
+            // ── Generar pills ──
+            const pillsEl = document.getElementById('month-pills');
+            if (pillsEl) {
+                const pillBase = 'px-4 py-2 rounded-full text-xs font-bold border-2 transition-all duration-200 cursor-pointer';
+                const activeCls = 'bg-brand-gold border-brand-gold text-white shadow-md scale-105';
+                const inactiveCls = 'bg-transparent border-gray-200 dark:border-slate-600 text-gray-500 dark:text-gray-400 hover:border-brand-gold hover:text-brand-gold';
 
-            setText('hist-ingresos-total',   formatMoney(totalIngresos));
-            setText('hist-bolsas-total',     `${totalBolsas} bolsas`);
-            setText('hist-bolsas-detalle',   `250g: ${total250} | 500g: ${total500}`);
-            setText('hist-mejor-mes',        mejorMes);
-            setText('hist-mejor-mes-val',    maxIngreso > 0 ? formatMoney(maxIngreso) : 'Sin datos aún');
-            setText('hist-promedio',         formatMoney(promedioMes));
-            setText('hist-meses-activos',    `${mesesConVentas} mes${mesesConVentas !== 1 ? 'es' : ''} con ventas`);
+                let html = `<button class="${pillBase} ${_selectedMthIdx === null ? activeCls : inactiveCls}" onclick="selectMonth(null)">Todos</button>`;
+                meses.forEach((mes, i) => {
+                    const isActive = _selectedMthIdx === i;
+                    html += `<button class="${pillBase} ${isActive ? activeCls : inactiveCls}" onclick="selectMonth(${i})">${mes}</button>`;
+                });
+                pillsEl.innerHTML = html;
+            }
 
-            // Período label
-            const primerMes = meses[0] || '';
-            const ultimoMes = meses[meses.length - 1] || '';
-            setText('hist-tabla-periodo', primerMes && ultimoMes ? `${primerMes} → ${ultimoMes}` : '');
+            // ── KPIs y detalle según selección ──
+            if (_selectedMthIdx === null) {
+                // MODO TODOS
+                const totalIngresos  = acum;
+                const total250       = v250.reduce((a, b) => a + b, 0);
+                const total500       = v500.reduce((a, b) => a + b, 0);
+                const totalBolsas    = total250 + total500;
+                const mesesActivos   = ingresos.filter(v => v > 0).length;
+                const promedio       = mesesActivos > 0 ? Math.round(totalIngresos / mesesActivos) : 0;
+                const maxIngr        = Math.max(...ingresos);
+                const idxMax         = ingresos.indexOf(maxIngr);
 
-            // ── Gráfico Acumulado (Area + Bar) ──
+                setText('hist-kpi1-label',     'Ingresos Acumulados');
+                setText('hist-ingresos-total',  formatMoney(totalIngresos));
+                setText('hist-kpi1-sub',        'Desde el primer registro');
+                setText('hist-kpi2-label',     'Total Bolsas');
+                setText('hist-bolsas-total',   `${totalBolsas} bolsas`);
+                setText('hist-bolsas-detalle', `250g: ${total250} | 500g: ${total500}`);
+                setText('hist-kpi3-label',     'Mejor Mes');
+                setText('hist-mejor-mes',       idxMax >= 0 ? meses[idxMax] : '-');
+                setText('hist-mejor-mes-val',   maxIngr > 0 ? formatMoney(maxIngr) : 'Sin datos');
+                setText('hist-kpi4-label',     'Promedio / Mes');
+                setText('hist-promedio',        formatMoney(promedio));
+                setText('hist-meses-activos',  `${mesesActivos} mes${mesesActivos !== 1 ? 'es' : ''} con ventas`);
+
+                document.getElementById('hist-detalle-mes')?.classList.add('hidden');
+                setText('hist-tabla-periodo', meses[0] && meses[meses.length-1] ? `${meses[0]} → ${meses[meses.length-1]}` : '');
+                setText('hist-chart-title', 'Ingresos Acumulados en el Tiempo');
+            } else {
+                // MODO MES ESPECÍFICO
+                const i      = _selectedMthIdx;
+                const mes    = meses[i];
+                const b250   = v250[i];
+                const b500   = v500[i];
+                const btot   = vtotal[i];
+                const ingMes = ingresos[i];
+                const ingAcu = acumulado[i];
+                const prevIn = i > 0 ? ingresos[i - 1] : null;
+
+                // % vs anterior
+                let vsAnterior = '-', vsClass = 'text-gray-400';
+                if (prevIn !== null && prevIn > 0 && ingMes > 0) {
+                    const pct = Math.round(((ingMes - prevIn) / prevIn) * 100);
+                    vsAnterior = (pct >= 0 ? '+' : '') + pct + '%';
+                    vsClass = pct >= 0 ? 'text-emerald-500' : 'text-red-400';
+                } else if (prevIn === 0 && ingMes > 0) {
+                    vsAnterior = 'Nuevo'; vsClass = 'text-emerald-500';
+                } else if (ingMes === 0) {
+                    vsAnterior = 'Sin ventas'; vsClass = 'text-gray-300';
+                }
+
+                setText('hist-kpi1-label',    'Ingresos del Mes');
+                setText('hist-ingresos-total', ingMes > 0 ? formatMoney(ingMes) : '—');
+                setText('hist-kpi1-sub',       `Acumulado: ${formatMoney(ingAcu)}`);
+                setText('hist-kpi2-label',    'Bolsas del Mes');
+                setText('hist-bolsas-total',  `${btot} bolsas`);
+                setText('hist-bolsas-detalle',`250g: ${b250} | 500g: ${b500}`);
+                setText('hist-kpi3-label',    'vs Mes Anterior');
+                const kpi3el = document.getElementById('hist-mejor-mes');
+                if (kpi3el) { kpi3el.textContent = vsAnterior; kpi3el.className = `text-2xl font-serif font-bold ${vsClass}`; }
+                setText('hist-mejor-mes-val',  prevIn !== null ? `Anterior: ${formatMoney(prevIn)}` : 'Primer mes');
+                setText('hist-kpi4-label',    'Acumulado al Mes');
+                setText('hist-promedio',       formatMoney(ingAcu));
+                setText('hist-meses-activos', `${i + 1} mes${i + 1 !== 1 ? 'es' : ''} registrado${i + 1 !== 1 ? 's' : ''}`);
+
+                // Panel detalle
+                const detalle = document.getElementById('hist-detalle-mes');
+                if (detalle) detalle.classList.remove('hidden');
+                setText('detalle-mes-titulo', mes);
+                setText('detalle-v250',       b250);
+                setText('detalle-v500',       b500);
+                setText('detalle-ingresos',   ingMes > 0 ? formatMoney(ingMes) : '—');
+                const vsEl = document.getElementById('detalle-vs-anterior');
+                if (vsEl) { vsEl.textContent = vsAnterior; vsEl.className = `text-2xl font-bold ${vsClass}`; }
+
+                setText('hist-tabla-periodo', mes);
+                setText('hist-chart-title', `Detalle: ${mes}`);
+            }
+
+            // ── Gráfico ──
             if (_chartAcumulado) { _chartAcumulado.destroy(); _chartAcumulado = null; }
             const ctx = document.getElementById('chartAcumulado');
             if (ctx) {
+                // Color de barras: dorado normal, resaltado especial si hay mes seleccionado
+                const barColors = ingresos.map((_, i) => {
+                    if (_selectedMthIdx === null) return 'rgba(197,160,89,0.75)';
+                    return i === _selectedMthIdx ? '#C5A059' : 'rgba(197,160,89,0.2)';
+                });
+                const lineColors = acumulado.map((_, i) => {
+                    if (_selectedMthIdx === null) return '#22c55e';
+                    return i === _selectedMthIdx ? '#22c55e' : 'rgba(34,197,94,0.3)';
+                });
+
                 _chartAcumulado = new Chart(ctx.getContext('2d'), {
                     data: {
                         labels: meses,
@@ -876,19 +1001,21 @@
                                 label: 'Acumulado',
                                 data: acumulado,
                                 borderColor: '#22c55e',
-                                backgroundColor: 'rgba(34,197,94,0.12)',
+                                backgroundColor: 'rgba(34,197,94,0.10)',
                                 borderWidth: 2.5,
                                 fill: true,
                                 tension: 0.4,
-                                pointRadius: 4,
-                                pointBackgroundColor: '#22c55e',
+                                pointRadius: meses.map((_, i) => _selectedMthIdx === i ? 7 : 4),
+                                pointBackgroundColor: lineColors,
+                                pointBorderColor: lineColors,
+                                pointBorderWidth: 2,
                                 yAxisID: 'yAcum',
                             },
                             {
                                 type: 'bar',
                                 label: 'Por mes',
                                 data: ingresos,
-                                backgroundColor: 'rgba(197,160,89,0.75)',
+                                backgroundColor: barColors,
                                 borderRadius: 6,
                                 yAxisID: 'yMes',
                             }
@@ -899,24 +1026,18 @@
                         interaction: { mode: 'index', intersect: false },
                         plugins: {
                             legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: ctx => `${ctx.dataset.label}: ${formatMoney(ctx.parsed.y)}`
-                                }
-                            }
+                            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatMoney(ctx.parsed.y)}` } }
                         },
                         scales: {
                             x: { grid: { color: c.grid }, ticks: { color: c.text } },
                             yAcum: {
-                                position: 'left',
-                                grid: { color: c.grid },
+                                position: 'left', grid: { color: c.grid },
                                 ticks: { color: '#22c55e', callback: v => formatMoney(v) },
                                 title: { display: true, text: 'Acumulado', color: '#22c55e', font: { size: 11 } }
                             },
                             yMes: {
-                                position: 'right',
-                                grid: { drawOnChartArea: false },
-                                ticks: { color: c.gold || '#C5A059', callback: v => formatMoney(v) },
+                                position: 'right', grid: { drawOnChartArea: false },
+                                ticks: { color: '#C5A059', callback: v => formatMoney(v) },
                                 title: { display: true, text: 'Mes', color: '#C5A059', font: { size: 11 } }
                             }
                         }
@@ -924,65 +1045,74 @@
                 });
             }
 
-            // ── Tabla Mensual ──
+            // ── Tabla ──
             const tbody = document.getElementById('tbody-historico');
             if (!tbody) return;
             tbody.innerHTML = '';
 
+            const maxIngr2  = Math.max(...ingresos);
+
             dataGrafica.forEach((r, i) => {
-                const mes       = meses[i];
-                const b250      = v250[i];
-                const b500      = v500[i];
-                const btot      = vtotal[i];
-                const ingMes    = ingresos[i];
-                const ingAcum   = acumulado[i];
-                const prevIngr  = i > 0 ? ingresos[i - 1] : null;
+                const isSel    = _selectedMthIdx === i;
+                const isBest   = ingresos[i] === maxIngr2 && maxIngr2 > 0 && _selectedMthIdx === null;
+                const prevIngr = i > 0 ? ingresos[i - 1] : null;
 
-                // Tendencia
                 let tendencia = '';
-                if (prevIngr !== null && ingMes > 0) {
-                    if (ingMes > prevIngr) tendencia = '<span class="text-emerald-500 font-bold">▲</span>';
-                    else if (ingMes < prevIngr) tendencia = '<span class="text-red-400 font-bold">▼</span>';
-                    else tendencia = '<span class="text-gray-400">─</span>';
-                } else if (ingMes === 0) {
-                    tendencia = '<span class="text-gray-300 dark:text-slate-600">·</span>';
-                }
+                if (prevIngr !== null && ingresos[i] > 0) {
+                    if (ingresos[i] > prevIngr)      tendencia = '<span class="text-emerald-500 font-bold">▲</span>';
+                    else if (ingresos[i] < prevIngr) tendencia = '<span class="text-red-400 font-bold">▼</span>';
+                    else                             tendencia = '<span class="text-gray-400">─</span>';
+                } else if (ingresos[i] === 0)        tendencia = '<span class="text-gray-300 dark:text-slate-600">·</span>';
 
-                // Row highlight for best month
-                const isBest   = ingMes === maxIngreso && maxIngreso > 0;
-                const rowClass  = isBest
-                    ? 'bg-amber-50 dark:bg-amber-900/20 font-semibold'
-                    : 'hover:bg-brand-lightGreen/10 dark:hover:bg-slate-700/50 transition-colors';
+                const rowCls = isSel
+                    ? 'bg-brand-gold/10 dark:bg-brand-gold/10 ring-2 ring-brand-gold ring-inset font-semibold'
+                    : isBest
+                        ? 'bg-amber-50 dark:bg-amber-900/20 font-semibold'
+                        : _selectedMthIdx !== null
+                            ? 'opacity-40 hover:opacity-100 transition-opacity'
+                            : 'hover:bg-brand-lightGreen/10 dark:hover:bg-slate-700/50 transition-colors';
 
                 tbody.insertAdjacentHTML('beforeend', `
-                    <tr class="${rowClass}">
+                    <tr class="${rowCls} cursor-pointer" onclick="selectMonth(${i === _selectedMthIdx ? 'null' : i})">
                         <td class="px-5 py-3 font-medium text-brand-dark dark:text-white">
-                            ${mes}${isBest ? ' <span class="ml-1 text-xs text-amber-500">🏆</span>' : ''}
+                            ${meses[i]}${isBest ? ' <span class="ml-1 text-xs text-amber-500">🏆</span>' : ''}
+                            ${isSel ? ' <span class="ml-1 text-xs text-brand-gold">◀</span>' : ''}
                         </td>
-                        <td class="px-5 py-3 text-right tabular-nums">${b250}</td>
-                        <td class="px-5 py-3 text-right tabular-nums">${b500}</td>
-                        <td class="px-5 py-3 text-right tabular-nums font-medium">${btot}</td>
-                        <td class="px-5 py-3 text-right tabular-nums ${ingMes > 0 ? 'text-brand-dark dark:text-white font-bold' : 'text-gray-300 dark:text-slate-600'}">${ingMes > 0 ? formatMoney(ingMes) : '—'}</td>
-                        <td class="px-5 py-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400 font-bold">${formatMoney(ingAcum)}</td>
+                        <td class="px-5 py-3 text-right tabular-nums">${v250[i]}</td>
+                        <td class="px-5 py-3 text-right tabular-nums">${v500[i]}</td>
+                        <td class="px-5 py-3 text-right tabular-nums font-medium">${vtotal[i]}</td>
+                        <td class="px-5 py-3 text-right tabular-nums ${ingresos[i] > 0 ? 'text-brand-dark dark:text-white font-bold' : 'text-gray-300 dark:text-slate-600'}">${ingresos[i] > 0 ? formatMoney(ingresos[i]) : '—'}</td>
+                        <td class="px-5 py-3 text-right tabular-nums text-emerald-600 dark:text-emerald-400 font-bold">${formatMoney(acumulado[i])}</td>
                         <td class="px-5 py-3 text-center">${tendencia}</td>
                     </tr>
                 `);
             });
 
-            // Totals row
-            tbody.insertAdjacentHTML('beforeend', `
-                <tr class="bg-brand-dark dark:bg-slate-700 text-white font-bold text-sm">
-                    <td class="px-5 py-4">TOTAL</td>
-                    <td class="px-5 py-4 text-right tabular-nums">${total250}</td>
-                    <td class="px-5 py-4 text-right tabular-nums">${total500}</td>
-                    <td class="px-5 py-4 text-right tabular-nums">${totalBolsas}</td>
-                    <td class="px-5 py-4 text-right tabular-nums text-brand-gold">${formatMoney(totalIngresos)}</td>
-                    <td class="px-5 py-4 text-right tabular-nums text-emerald-400">${formatMoney(totalIngresos)}</td>
-                    <td class="px-5 py-4"></td>
-                </tr>
-            `);
+            // Fila totales (solo en modo Todos)
+            if (_selectedMthIdx === null) {
+                const t250 = v250.reduce((a,b)=>a+b,0), t500 = v500.reduce((a,b)=>a+b,0);
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="bg-brand-dark dark:bg-slate-700 text-white font-bold text-sm">
+                        <td class="px-5 py-4">TOTAL</td>
+                        <td class="px-5 py-4 text-right tabular-nums">${t250}</td>
+                        <td class="px-5 py-4 text-right tabular-nums">${t500}</td>
+                        <td class="px-5 py-4 text-right tabular-nums">${t250+t500}</td>
+                        <td class="px-5 py-4 text-right tabular-nums text-brand-gold">${formatMoney(acum)}</td>
+                        <td class="px-5 py-4 text-right tabular-nums text-emerald-400">${formatMoney(acum)}</td>
+                        <td class="px-5 py-4"></td>
+                    </tr>
+                `);
+            }
         }
 
+        function selectMonth(idx) {
+            _selectedMthIdx = idx;
+            if (_histData) renderHistorico(_histData);
+        }
+
+        /* ==========================================
+           RENDER CLIENTES ESPECIALES
+        ========================================== */
         /* ==========================================
            RENDER CLIENTES ESPECIALES
         ========================================== */
