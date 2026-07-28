@@ -1588,8 +1588,37 @@
                     btn.disabled = false;
                     btn.innerHTML = 'Guardar';
                     btn.classList.replace('bg-green-600', 'bg-emerald-500');
-                    alert("Pedido guardado exitosamente.");
-                }, 1500);
+                    
+                    // -- ACTUALIZACIÓN VISUAL INMEDIATA (Optimistic UI) --
+                    const tbody = document.getElementById('tbody-clientes');
+                    const badgeClass = estado.toLowerCase() === 'debe'
+                        ? 'bg-red-100 text-red-600 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800'
+                        : 'bg-green-100 text-green-600 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800';
+                    const iniciales = cliente.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'C';
+                    const deudaFmt = parseInt(deuda) > 0 ? '$' + parseInt(deuda).toLocaleString('es-CO') : '-';
+                    
+                    const trHtml = `
+                        <tr class="hover:bg-brand-lightGreen/10 dark:hover:bg-slate-700/50 transition-colors bg-brand-gold/10 dark:bg-brand-gold/20">
+                            <td class="px-6 py-4 text-gray-500 dark:text-gray-400">${fechaFormateada}</td>
+                            <td class="px-6 py-4 font-medium">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-brand-green dark:bg-brand-gold text-white dark:text-slate-900 flex items-center justify-center text-xs font-bold flex-shrink-0">${iniciales}</div>
+                                    <span class="text-brand-dark dark:text-white">${cliente}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${detalle}</td>
+                            <td class="px-6 py-4 font-bold text-brand-dark dark:text-brand-gold">${deudaFmt}</td>
+                            <td class="px-6 py-4">
+                                <span class="${badgeClass} px-3 py-1 rounded-full text-xs font-bold border">${estado}</span>
+                            </td>
+                        </tr>
+                    `;
+                    // Quitar fila de "no hay registros" si existe
+                    if (tbody.innerHTML.includes('No hay registros')) tbody.innerHTML = '';
+                    // Insertar arriba
+                    tbody.insertAdjacentHTML('afterbegin', trHtml);
+
+                }, 1000);
 
             } catch (err) {
                 alert("Error: " + err.message);
