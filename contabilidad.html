@@ -38,6 +38,40 @@
             background: rgba(26,67,49,0.05);
         }
         .dark .inactive-tab:hover { color: #C5A059; }
+
+        /* Form card selects */
+        .producto-card input:checked ~ .producto-card-inner,
+        .mov-card input:checked ~ .mov-card-inner {
+            border-color: #C5A059;
+            background: rgba(197,160,89,0.08);
+            transform: scale(1.03);
+            box-shadow: 0 0 0 3px rgba(197,160,89,0.2);
+        }
+        /* Fix: target radio inside label for .mov-card-inner */
+        label:has(> input[type="radio"]:checked) > .mov-card-inner {
+            border-color: #C5A059;
+            background: rgba(197,160,89,0.08);
+            transform: scale(1.03);
+            box-shadow: 0 0 0 3px rgba(197,160,89,0.2);
+        }
+        label:has(> input[type="radio"]:checked) > .producto-card-inner {
+            border-color: #C5A059;
+            background: rgba(197,160,89,0.08);
+            transform: scale(1.03);
+            box-shadow: 0 0 0 3px rgba(197,160,89,0.2);
+        }
+        /* Select arrow */
+        #input-local {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23C5A059' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+        /* Spinner hide arrows */
+        #input-cantidad::-webkit-outer-spin-button,
+        #input-cantidad::-webkit-inner-spin-button { -webkit-appearance: none; }
+        #input-cantidad { -moz-appearance: textfield; }
+
     </style>
 
     <script>
@@ -115,7 +149,7 @@
             </div>
 
             <!-- ===== TABS NAV ===== -->
-            <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3 flex gap-1" id="tabs-nav" role="tablist">
+            <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3 flex gap-1 flex-wrap" id="tabs-nav" role="tablist">
                 <button id="tab-btn-resumen"
                     onclick="switchTab('resumen')"
                     role="tab" aria-selected="true"
@@ -127,6 +161,12 @@
                     role="tab" aria-selected="false"
                     class="tab-btn inactive-tab px-5 py-2 rounded-t-xl text-sm font-bold transition-all flex items-center gap-2">
                     <i class="fa-solid fa-clock-rotate-left"></i> Histórico &amp; Ganancias
+                </button>
+                <button id="tab-btn-ventas"
+                    onclick="switchTab('ventas')"
+                    role="tab" aria-selected="false"
+                    class="tab-btn inactive-tab px-5 py-2 rounded-t-xl text-sm font-bold transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle"></i> Agregar Movimiento
                 </button>
             </nav>
         </header>
@@ -423,6 +463,158 @@
         </main>
         </div><!-- /tab-panel-historico -->
 
+        <!-- ===== TAB: AGREGAR MOVIMIENTO ===== -->
+        <div id="tab-panel-ventas" role="tabpanel" class="hidden flex-1 flex flex-col">
+        <main class="flex-1 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+            <div class="mb-8">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Registro de operaciones</p>
+                <h2 class="font-serif font-bold text-2xl text-brand-dark dark:text-white">Nuevo Movimiento</h2>
+                <p class="text-sm text-gray-400 mt-1">Los datos se guardan directamente en la hoja <strong>Movimientos</strong> de Google Sheets.</p>
+            </div>
+
+            <form id="form-venta" onsubmit="submitVenta(event)" novalidate
+                class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft p-6 sm:p-8 space-y-6">
+
+                <!-- FECHA -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-calendar-days text-brand-gold mr-1"></i> Fecha
+                    </label>
+                    <input type="date" id="input-fecha" required
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-brand-dark dark:text-white focus:outline-none focus:border-brand-gold transition-colors text-sm font-medium">
+                    <p class="text-xs text-gray-400 mt-1">Formato: DD/MM/AAAA — elige del calendario</p>
+                </div>
+
+                <!-- LOCAL -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-store text-brand-gold mr-1"></i> Local
+                    </label>
+                    <select id="input-local" required
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-brand-dark dark:text-white focus:outline-none focus:border-brand-gold transition-colors text-sm font-medium appearance-none cursor-pointer">
+                        <option value="">— Selecciona un local —</option>
+                        <!-- Opciones se pueblan desde Resumen -->
+                    </select>
+                </div>
+
+                <!-- PRODUCTO -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-bag-shopping text-brand-gold mr-1"></i> Producto
+                    </label>
+                    <div class="grid grid-cols-3 gap-3" id="producto-cards">
+                        <label class="producto-card cursor-pointer">
+                            <input type="radio" name="producto" value="125 g" class="sr-only" onchange="onProductoChange(this)">
+                            <div class="producto-card-inner p-4 rounded-xl border-2 border-gray-200 dark:border-slate-600 text-center transition-all hover:border-brand-gold">
+                                <div class="text-2xl mb-1">☕</div>
+                                <p class="font-bold text-brand-dark dark:text-white text-sm">125 g</p>
+                                <p class="text-xs text-brand-gold font-bold mt-1">$14.000</p>
+                            </div>
+                        </label>
+                        <label class="producto-card cursor-pointer">
+                            <input type="radio" name="producto" value="250 g" class="sr-only" onchange="onProductoChange(this)">
+                            <div class="producto-card-inner p-4 rounded-xl border-2 border-gray-200 dark:border-slate-600 text-center transition-all hover:border-brand-gold">
+                                <div class="text-2xl mb-1">☕</div>
+                                <p class="font-bold text-brand-dark dark:text-white text-sm">250 g</p>
+                                <p class="text-xs text-brand-gold font-bold mt-1">$22.000</p>
+                            </div>
+                        </label>
+                        <label class="producto-card cursor-pointer">
+                            <input type="radio" name="producto" value="500 g" class="sr-only" onchange="onProductoChange(this)">
+                            <div class="producto-card-inner p-4 rounded-xl border-2 border-gray-200 dark:border-slate-600 text-center transition-all hover:border-brand-gold">
+                                <div class="text-2xl mb-1">☕</div>
+                                <p class="font-bold text-brand-dark dark:text-white text-sm">500 g</p>
+                                <p class="text-xs text-brand-gold font-bold mt-1">$40.000</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- MOVIMIENTO -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-arrow-right-arrow-left text-brand-gold mr-1"></i> Tipo de Movimiento
+                    </label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="movimiento" value="Venta" class="sr-only" onchange="onMovimientoChange(this)">
+                            <div class="mov-card-inner p-4 rounded-xl border-2 border-gray-200 dark:border-slate-600 text-center transition-all hover:border-emerald-500">
+                                <i class="fa-solid fa-cash-register text-emerald-500 text-xl mb-2"></i>
+                                <p class="font-bold text-brand-dark dark:text-white text-sm">Venta</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="movimiento" value="Entrega" class="sr-only" onchange="onMovimientoChange(this)">
+                            <div class="mov-card-inner p-4 rounded-xl border-2 border-gray-200 dark:border-slate-600 text-center transition-all hover:border-blue-400">
+                                <i class="fa-solid fa-truck text-blue-400 text-xl mb-2"></i>
+                                <p class="font-bold text-brand-dark dark:text-white text-sm">Entrega</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- CANTIDAD -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-hashtag text-brand-gold mr-1"></i> Cantidad
+                    </label>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="stepCantidad(-1)"
+                            class="w-11 h-11 rounded-xl bg-gray-100 dark:bg-slate-700 hover:bg-brand-gold hover:text-white text-brand-dark dark:text-white font-bold text-xl transition-all flex items-center justify-center flex-shrink-0">
+                            −
+                        </button>
+                        <input type="number" id="input-cantidad" min="1" max="999" value="1" required
+                            class="flex-1 text-center px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-brand-dark dark:text-white focus:outline-none focus:border-brand-gold transition-colors text-xl font-bold"
+                            oninput="updatePreview()">
+                        <button type="button" onclick="stepCantidad(1)"
+                            class="w-11 h-11 rounded-xl bg-gray-100 dark:bg-slate-700 hover:bg-brand-gold hover:text-white text-brand-dark dark:text-white font-bold text-xl transition-all flex items-center justify-center flex-shrink-0">
+                            +
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PRECIO Y TOTAL (solo lectura) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-dashed border-gray-300 dark:border-slate-600 p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Precio Unitario</p>
+                        <p class="text-xl font-serif font-bold text-brand-dark dark:text-white" id="preview-precio">—</p>
+                        <p class="text-xs text-gray-400 mt-1">Automático según producto</p>
+                    </div>
+                    <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-dashed border-emerald-300 dark:border-emerald-700 p-4">
+                        <p class="text-xs text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-bold mb-1">Total Estimado</p>
+                        <p class="text-xl font-serif font-bold text-emerald-600 dark:text-emerald-400" id="preview-total">—</p>
+                        <p class="text-xs text-gray-400 mt-1">Excel confirma el valor final</p>
+                    </div>
+                </div>
+
+                <!-- SUBMIT -->
+                <div class="pt-2">
+                    <button type="submit" id="btn-submit-venta"
+                        class="w-full py-4 bg-brand-dark hover:bg-brand-green active:scale-95 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span id="btn-submit-text">Guardar Movimiento</span>
+                    </button>
+                </div>
+
+                <!-- FEEDBACK -->
+                <div id="form-feedback" class="hidden rounded-xl px-5 py-4 text-sm font-medium flex items-center gap-3"></div>
+
+            </form>
+
+            <!-- Instrucción Apps Script -->
+            <div class="mt-6 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-700 rounded-2xl p-5">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5"></i>
+                    <div>
+                        <p class="text-sm font-bold text-amber-700 dark:text-amber-400 mb-1">Configuración requerida</p>
+                        <p class="text-xs text-amber-600 dark:text-amber-500">Para que el formulario guarde datos en Google Sheets, debes configurar tu Apps Script. Sigue las instrucciones que te di más abajo.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        </div><!-- /tab-panel-ventas -->
 
         <footer class="bg-white dark:bg-slate-900 border-t border-brand-border dark:border-slate-800 py-6 mt-auto transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-400">
@@ -470,12 +662,15 @@
         });
 
         /* ==========================================
-           TAB SWITCHER
+           TAB SWITCHER (3 tabs)
         ========================================== */
+        const ALL_TABS = ['resumen', 'historico', 'ventas'];
+
         function switchTab(name) {
-            ['resumen', 'historico'].forEach(t => {
+            ALL_TABS.forEach(t => {
                 const panel = document.getElementById(`tab-panel-${t}`);
                 const btn   = document.getElementById(`tab-btn-${t}`);
+                if (!panel || !btn) return;
                 if (t === name) {
                     panel.classList.remove('hidden');
                     btn.classList.remove('inactive-tab');
@@ -488,9 +683,154 @@
                     btn.setAttribute('aria-selected', 'false');
                 }
             });
-            // Render histórico on first open (or re-render on dark mode change)
             if (name === 'historico' && window._lastDataGrafica) {
                 renderHistorico(window._lastDataGrafica);
+            }
+            if (name === 'ventas') {
+                initFormVenta();
+            }
+        }
+
+        /* ==========================================
+           FORMULARIO: AGREGAR MOVIMIENTO
+        ========================================== */
+
+        // ⚠️  Reemplaza esta URL con la de tu Apps Script publicado
+        const APPS_SCRIPT_URL = 'PEGAR_URL_APPS_SCRIPT_AQUI';
+
+        const PRECIOS = { '125 g': 14000, '250 g': 22000, '500 g': 40000 };
+        let _precioUnitario = 0;
+
+        function initFormVenta() {
+            // Poner fecha de hoy por defecto
+            const hoy = new Date();
+            const yyyy = hoy.getFullYear();
+            const mm   = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dd   = String(hoy.getDate()).padStart(2, '0');
+            const inputFecha = document.getElementById('input-fecha');
+            if (inputFecha && !inputFecha.value) inputFecha.value = `${yyyy}-${mm}-${dd}`;
+
+            // Poblar locales desde Resumen (si ya cargaron)
+            populateLocales();
+        }
+
+        function populateLocales() {
+            const sel = document.getElementById('input-local');
+            if (!sel || !window._lastDataResumen) return;
+            // Limpiar opciones existentes (salvo la primera)
+            while (sel.options.length > 1) sel.remove(1);
+            const locales = [...new Set(window._lastDataResumen.map(r => (r['Local'] || '').trim()).filter(Boolean))];
+            locales.forEach(l => {
+                const opt = document.createElement('option');
+                opt.value = l; opt.textContent = l;
+                sel.appendChild(opt);
+            });
+        }
+
+        function onProductoChange(radio) {
+            _precioUnitario = PRECIOS[radio.value] || 0;
+            updatePreview();
+        }
+
+        function onMovimientoChange(radio) {
+            // Visual feedback (handled by CSS :has selector, nothing extra needed)
+        }
+
+        function stepCantidad(delta) {
+            const el = document.getElementById('input-cantidad');
+            if (!el) return;
+            let v = parseInt(el.value) || 1;
+            v = Math.max(1, Math.min(999, v + delta));
+            el.value = v;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const cant = parseInt(document.getElementById('input-cantidad')?.value) || 0;
+            const total = _precioUnitario * cant;
+            const fmt = v => v > 0 ? '$' + v.toLocaleString('es-CO') : '—';
+            setText('preview-precio', fmt(_precioUnitario));
+            setText('preview-total',  total > 0 ? fmt(total) : '—');
+        }
+
+        async function submitVenta(e) {
+            e.preventDefault();
+            const feedback = document.getElementById('form-feedback');
+            const btn      = document.getElementById('btn-submit-venta');
+            const btnTxt   = document.getElementById('btn-submit-text');
+
+            // ── Validaciones ──
+            const fechaRaw  = document.getElementById('input-fecha')?.value;
+            const local     = document.getElementById('input-local')?.value;
+            const producto  = document.querySelector('input[name="producto"]:checked')?.value;
+            const movim     = document.querySelector('input[name="movimiento"]:checked')?.value;
+            const cantEl    = document.getElementById('input-cantidad');
+            const cantidad  = parseInt(cantEl?.value) || 0;
+
+            const showError = msg => {
+                feedback.className = 'rounded-xl px-5 py-4 text-sm font-medium flex items-center gap-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-700';
+                feedback.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${msg}`;
+                feedback.classList.remove('hidden');
+                feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            };
+
+            if (!fechaRaw)       return showError('Selecciona una fecha.');
+            if (!local)          return showError('Selecciona un local.');
+            if (!producto)       return showError('Selecciona un producto (125g, 250g o 500g).');
+            if (!movim)          return showError('Selecciona el tipo de movimiento.');
+            if (cantidad < 1)    return showError('La cantidad debe ser al menos 1.');
+
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PEGAR_URL')) {
+                return showError('Falta configurar la URL del Apps Script. Pega tu URL en el código.');
+            }
+
+            // ── Formatear fecha DD/MM/YYYY ──
+            const [yyyy, mm, dd] = fechaRaw.split('-');
+            const fechaFormateada = `${dd}/${mm}/${yyyy}`;
+
+            // ── Enviar ──
+            btn.disabled = true;
+            btnTxt.textContent = 'Guardando...';
+            btn.querySelector('i').className = 'fa-solid fa-spinner fa-spin';
+            feedback.classList.add('hidden');
+
+            try {
+                const payload = {
+                    fecha:      fechaFormateada,
+                    local:      local,
+                    producto:   producto,
+                    movimiento: movim,
+                    cantidad:   cantidad,
+                    precio:     _precioUnitario,
+                };
+
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',   // Apps Script no devuelve CORS headers
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                // Con mode:'no-cors' no podemos leer el body, pero si no lanza error = éxito
+                feedback.className = 'rounded-xl px-5 py-4 text-sm font-medium flex items-center gap-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700';
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check text-lg"></i>
+                    <div><strong>¡Movimiento guardado!</strong><br>
+                    <span class="text-xs opacity-80">${fechaFormateada} · ${local} · ${producto} · ${movim} · ${cantidad} uds · $${_precioUnitario.toLocaleString('es-CO')}</span>
+                    </div>`;
+                feedback.classList.remove('hidden');
+
+                // Reset form (excepto local y fecha)
+                document.querySelectorAll('input[name="producto"], input[name="movimiento"]').forEach(r => r.checked = false);
+                cantEl.value = 1;
+                _precioUnitario = 0;
+                updatePreview();
+
+            } catch (err) {
+                showError(`Error al conectar con Google Sheets: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btnTxt.textContent = 'Guardar Movimiento';
+                btn.querySelector('i').className = 'fa-solid fa-paper-plane';
             }
         }
 
