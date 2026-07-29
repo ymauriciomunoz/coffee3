@@ -288,6 +288,26 @@
                 <i class="fa-solid fa-truck-fast text-brand-gold text-xl"></i>
                 <h2 class="font-serif text-2xl font-bold dark:text-white">Estado de Clientes Especiales y Mayoristas</h2>
             </div>
+
+            <!-- Gráficas de Clientes -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Gráfica: Por cobrar -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft p-5">
+                    <h3 class="text-sm font-bold text-red-600 dark:text-red-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-hand-holding-dollar"></i> Por cobrar (Deuda)</h3>
+                    <div class="h-48 relative w-full">
+                        <canvas id="chartClientesDebe"></canvas>
+                    </div>
+                </div>
+                <!-- Gráfica: Pagados -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft p-5">
+                    <h3 class="text-sm font-bold text-green-600 dark:text-green-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-sack-dollar"></i> Pagados (Ingresos)</h3>
+                    <div class="h-48 relative w-full">
+                        <canvas id="chartClientesPagado"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Clientes -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft overflow-hidden">
                 <div class="px-6 py-4 border-b border-brand-border dark:border-slate-700 bg-brand-bg dark:bg-slate-900 flex items-center justify-between">
                     <h3 class="font-bold text-brand-dark dark:text-white">Cuentas y Pedidos Pendientes</h3>
@@ -1186,14 +1206,14 @@
             });
         }
 
-        function drawHBarChart(id, labels, data, c) {
+        function drawHBarChart(id, labels, data, c, color) {
             destroyChart('_chart_' + id);
             const sorted = labels.map((l, i) => ({ l, v: data[i] })).sort((a, b) => b.v - a.v);
             window['_chart_' + id] = new Chart(document.getElementById(id), {
                 type: 'bar',
                 data: {
                     labels: sorted.map(x => x.l),
-                    datasets: [{ data: sorted.map(x => x.v), backgroundColor: 'rgba(197,160,89,0.85)', borderRadius: 4 }]
+                    datasets: [{ data: sorted.map(x => x.v), backgroundColor: color || 'rgba(197,160,89,0.85)', borderRadius: 4 }]
                 },
                 options: {
                     indexAxis: 'y',
@@ -1492,23 +1512,31 @@
                 return;
             }
 
+            const c = chartColors();
+            const deudas = {};
+            const pagados = {};
+
             tbody.innerHTML = '';
             dataClientes.forEach((row, i) => {
                 if (!row['Cliente'] && !row['Detalle']) return;
 
+                const nombre     = (row['Cliente'] || 'C').trim();
                 const estado     = (row['Estado'] || '').trim().toLowerCase();
                 const esDebe     = estado === 'debe' || estado === 'pendiente';
+                const deudaNum   = parseInt(String(row['Deuda'] || '0').replace(/[^0-9]/g, '')) || 0;
+
+                if (esDebe) deudas[nombre] = (deudas[nombre] || 0) + deudaNum;
+                else pagados[nombre] = (pagados[nombre] || 0) + deudaNum;
+
                 const badgeClass = esDebe
                     ? 'bg-red-100 text-red-600 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800'
                     : 'bg-green-100 text-green-600 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800';
                 const badgeLabel = esDebe ? 'Debe' : (row['Estado'] || 'Pagado');
 
                 // Iniciales del cliente para el avatar
-                const nombre     = (row['Cliente'] || 'C').trim();
                 const iniciales  = nombre.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
 
                 // Formatear deuda
-                const deudaNum   = parseInt(String(row['Deuda'] || '0').replace(/[^0-9]/g, '')) || 0;
                 const deudaFmt   = deudaNum > 0 ? '$' + deudaNum.toLocaleString('es-CO') : '-';
 
                 tbody.insertAdjacentHTML('beforeend', `
@@ -1528,6 +1556,15 @@
                     </tr>
                 `);
             });
+
+            // Dibujar gráficas
+            const labelsDeuda = Object.keys(deudas);
+            const dataDeuda = Object.values(deudas);
+            drawHBarChart('chartClientesDebe', labelsDeuda, dataDeuda, c, 'rgba(220, 38, 38, 0.7)');
+
+            const labelsPagado = Object.keys(pagados);
+            const dataPagado = Object.values(pagados);
+            drawHBarChart('chartClientesPagado', labelsPagado, dataPagado, c, 'rgba(22, 163, 74, 0.7)');
         }
 
         // --- LÓGICA DE NUEVO CLIENTE ---
