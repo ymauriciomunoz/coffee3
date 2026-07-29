@@ -289,20 +289,26 @@
                 <h2 class="font-serif text-2xl font-bold dark:text-white">Estado de Clientes Especiales y Mayoristas</h2>
             </div>
 
-            <!-- Gráficas de Clientes -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <!-- Gráfica: Por cobrar -->
-                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft p-5">
-                    <h3 class="text-sm font-bold text-red-600 dark:text-red-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-hand-holding-dollar"></i> Por cobrar (Deuda)</h3>
-                    <div class="h-48 relative w-full">
-                        <canvas id="chartClientesDebe"></canvas>
+            <!-- Resumen Económico Clientes -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <!-- KPI: Por cobrar -->
+                <div class="bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-800/50 p-5 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-red-600 dark:text-red-400 mb-1 flex items-center gap-2"><i class="fa-solid fa-hand-holding-dollar"></i> Por cobrar (Deuda)</h3>
+                        <p class="text-2xl font-black text-red-700 dark:text-red-300" id="kpi-clientes-debe">...</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center text-red-500 dark:text-red-400 text-xl">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
                     </div>
                 </div>
-                <!-- Gráfica: Pagados -->
-                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-brand-border dark:border-slate-700 shadow-soft p-5">
-                    <h3 class="text-sm font-bold text-green-600 dark:text-green-400 mb-4 flex items-center gap-2"><i class="fa-solid fa-sack-dollar"></i> Pagados (Ingresos)</h3>
-                    <div class="h-48 relative w-full">
-                        <canvas id="chartClientesPagado"></canvas>
+                <!-- KPI: Pagados -->
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 p-5 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-1 flex items-center gap-2"><i class="fa-solid fa-sack-dollar"></i> Pagados (Ingresos)</h3>
+                        <p class="text-2xl font-black text-emerald-700 dark:text-emerald-300" id="kpi-clientes-pagado">...</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-500 dark:text-emerald-400 text-xl">
+                        <i class="fa-solid fa-check-double"></i>
                     </div>
                 </div>
             </div>
@@ -1557,14 +1563,12 @@
                 `);
             });
 
-            // Dibujar gráficas
-            const labelsDeuda = Object.keys(deudas);
-            const dataDeuda = Object.values(deudas);
-            drawHBarChart('chartClientesDebe', labelsDeuda, dataDeuda, c, 'rgba(220, 38, 38, 0.7)');
-
-            const labelsPagado = Object.keys(pagados);
-            const dataPagado = Object.values(pagados);
-            drawHBarChart('chartClientesPagado', labelsPagado, dataPagado, c, 'rgba(22, 163, 74, 0.7)');
+            // Actualizar KPIs de Clientes
+            const sumaDeuda = Object.values(deudas).reduce((a, b) => a + b, 0);
+            const sumaPagado = Object.values(pagados).reduce((a, b) => a + b, 0);
+            
+            setText('kpi-clientes-debe', '$' + sumaDeuda.toLocaleString('es-CO'));
+            setText('kpi-clientes-pagado', '$' + sumaPagado.toLocaleString('es-CO'));
         }
 
         // --- LÓGICA DE NUEVO CLIENTE ---
