@@ -648,11 +648,13 @@
         /* ==========================================
            LOGIN
         ========================================== */
-        function checkPassword() {
+        function checkPassword(skipCheck = false) {
             const input = document.getElementById('password-input').value;
             const error = document.getElementById('login-error');
             const PASS  = "vanessahermosa";
-            if (input === PASS) {
+            
+            if (skipCheck || input === PASS) {
+                if (!skipCheck) sessionStorage.setItem('authTime', Date.now());
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard').classList.remove('hidden');
                 document.getElementById('dashboard').classList.add('flex');
@@ -664,6 +666,12 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Auto-login si pasaron menos de 5 minutos
+            const authTime = sessionStorage.getItem('authTime');
+            if (authTime && (Date.now() - parseInt(authTime) < 5 * 60 * 1000)) {
+                checkPassword(true);
+            }
+
             document.getElementById('password-input').addEventListener('keypress', e => {
                 if (e.key === 'Enter') checkPassword();
             });
@@ -678,6 +686,12 @@
         const ALL_TABS = ['resumen', 'historico', 'ventas'];
 
         function switchTab(name) {
+            // Si hay datos nuevos y cambiamos a una pestaña de resumen, recargar la página (auto-login activo)
+            if (window._needsRefresh && (name === 'resumen' || name === 'historico')) {
+                location.reload();
+                return;
+            }
+
             ALL_TABS.forEach(t => {
                 const panel = document.getElementById(`tab-panel-${t}`);
                 const btn   = document.getElementById(`tab-btn-${t}`);
@@ -835,6 +849,8 @@
                 cantEl.value = 1;
                 _precioUnitario = 0;
                 updatePreview();
+
+                window._needsRefresh = true;
 
             } catch (err) {
                 showError(`Error al conectar con Google Sheets: ${err.message}`);
