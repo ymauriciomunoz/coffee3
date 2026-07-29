@@ -1110,14 +1110,20 @@
             setText('kpi-stock-bajo', `${localesBajos} locales`);
 
             // --- Gráficos de evolución mensual (pestaña GRAFICA) ---
-            const meses    = dataGrafica.map(r => capitalize(r['Mes'] || r['Periodo'] || ''));
+            const meses = dataGrafica.map(r => capitalize(r['Mes'] || r['Periodo'] || ''));
+            const mesesFull = dataGrafica.map(r => {
+                const m = capitalize((r['Mes'] || '').trim());
+                const y = (r['Periodo'] || '').substring(0, 4);
+                return (m && y) ? `${m} ${y}` : (m || r['Periodo'] || '');
+            });
+
             const v250     = dataGrafica.map(r => parseInt(r['Ventas_250g']) || 0);
             const v500     = dataGrafica.map(r => parseInt(r['Ventas_500g']) || 0);
             const ingresos = dataGrafica.map(r => parseMoney(r['Ingresos_total']));
 
-            drawBarChart('chart250', meses, v250, 'Bolsas 250g', c.green, c);
-            drawBarChart('chart500', meses, v500, 'Bolsas 500g', c.gold, c);
-            drawLineChart('chartIngresos', meses, ingresos, 'Ingresos', c.income, c);
+            drawBarChart('chart250', meses, v250, 'Bolsas 250g', c.green, c, mesesFull);
+            drawBarChart('chart500', meses, v500, 'Bolsas 500g', c.gold, c, mesesFull);
+            drawLineChart('chartIngresos', meses, ingresos, 'Ingresos', c.income, c, mesesFull);
 
             // --- Ventas por local este mes (pestaña MOVIMIENTOS) ---
             const mesActual = new Date().toISOString().slice(0, 7); // "2026-07"
@@ -1170,7 +1176,7 @@
             };
         }
 
-        function drawBarChart(id, labels, data, label, color, c) {
+        function drawBarChart(id, labels, data, label, color, c, fullLabels = null) {
             destroyChart('_chart_' + id);
             window['_chart_' + id] = new Chart(document.getElementById(id), {
                 type: 'bar',
@@ -1179,7 +1185,8 @@
                     ...baseOptions(c),
                     plugins: {
                         legend: { display: false },
-                        datalabels: { display: false }
+                        datalabels: { display: false },
+                        tooltip: fullLabels ? { callbacks: { title: ctx => fullLabels[ctx[0].dataIndex] } } : {}
                     },
                     scales: {
                         x: { ticks: { color: c.text }, grid: { display: false } },
@@ -1189,14 +1196,17 @@
             });
         }
 
-        function drawLineChart(id, labels, data, label, color, c) {
+        function drawLineChart(id, labels, data, label, color, c, fullLabels = null) {
             destroyChart('_chart_' + id);
             window['_chart_' + id] = new Chart(document.getElementById(id), {
                 type: 'line',
                 data: { labels, datasets: [{ label, data, borderColor: color, backgroundColor: color + '20', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: color }] },
                 options: {
                     ...baseOptions(c),
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: fullLabels ? { callbacks: { title: ctx => fullLabels[ctx[0].dataIndex] } } : {}
+                    },
                     scales: {
                         x: { ticks: { color: c.text }, grid: { display: false } },
                         y: {
@@ -1268,7 +1278,12 @@
 
             const c = chartColors();
 
-            const meses    = dataGrafica.map(r => capitalize((r['Mes'] || r['Periodo'] || '').trim()));
+            const meses = dataGrafica.map(r => capitalize((r['Mes'] || r['Periodo'] || '').trim()));
+            const mesesFull = dataGrafica.map(r => {
+                const m = capitalize((r['Mes'] || '').trim());
+                const y = (r['Periodo'] || '').substring(0, 4);
+                return (m && y) ? `${m} ${y}` : (m || r['Periodo'] || '');
+            });
             const v250     = dataGrafica.map(r => parseInt(r['Ventas_250g'])  || 0);
             const v500     = dataGrafica.map(r => parseInt(r['Ventas_500g'])  || 0);
             const vtotal   = v250.map((v, i) => v + v500[i]);
@@ -1419,7 +1434,12 @@
                         interaction: { mode: 'index', intersect: false },
                         plugins: {
                             legend: { display: false },
-                            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${formatMoney(ctx.parsed.y)}` } }
+                            tooltip: { 
+                                callbacks: { 
+                                    title: ctx => mesesFull[ctx[0].dataIndex],
+                                    label: ctx => `${ctx.dataset.label}: ${formatMoney(ctx.parsed.y)}` 
+                                } 
+                            }
                         },
                         scales: {
                             x: { grid: { color: c.grid }, ticks: { color: c.text } },
