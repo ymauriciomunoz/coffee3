@@ -5,8 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumen General | El Vagón del Café</title>
 
+    <!-- Configuraci\u00f3n personalizada de Tailwind (debe ir ANTES del CDN) -->
+    <script>
+        tailwind = { config: {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#F9F8F4',
+                            card: '#FFFFFF',
+                            dark: '#1E2320',
+                            green: '#1A4331',
+                            gold: '#C5A059',
+                            lightGreen: '#E8F0EC',
+                            border: '#E5E1D8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.05)',
+                        'hover': '0 20px 40px -10px rgba(26, 67, 49, 0.15)',
+                    }
+                }
+            }
+        }};
+    </script>
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="js/tailwind.config.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">

@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Descubre El Vagón del Café: café de origen premium cultivado con tradición en Santo Domingo, Antioquia. Explora nuestro catálogo de precios y aprende en nuestra escuela.">
     <title>El Vagón del Café | Café de Origen de Santo Domingo, Antioquia</title>
-    <!-- Tailwind CSS (CDN) -->
+    <!-- Evitar destello blanco al cargar la página -->
     <script>
-        // Evitar destello blanco al cargar la página
         const isDark = localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
         if (isDark) document.documentElement.classList.add('dark');
         
@@ -25,10 +24,39 @@
             });
         });
     </script>
+
+    <!-- Configuración personalizada de Tailwind (debe ir ANTES del CDN) -->
+    <script>
+        tailwind = { config: {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#F9F8F4',
+                            card: '#FFFFFF',
+                            dark: '#1E2320',
+                            green: '#1A4331',
+                            gold: '#C5A059',
+                            lightGreen: '#E8F0EC',
+                            border: '#E5E1D8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.05)',
+                        'hover': '0 20px 40px -10px rgba(26, 67, 49, 0.15)',
+                    }
+                }
+            }
+        }};
+    </script>
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Configuración personalizada de Tailwind -->
-    <script src="js/tailwind.config.js"></script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
