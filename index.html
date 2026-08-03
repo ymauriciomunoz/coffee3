@@ -25,9 +25,12 @@
         });
     </script>
 
-    <!-- Configuración personalizada de Tailwind (debe ir ANTES del CDN) -->
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Configuración personalizada de Tailwind (va DESPUÉS del CDN para que el objeto tailwind ya exista) -->
     <script>
-        tailwind = { config: {
+        tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
@@ -52,11 +55,8 @@
                     }
                 }
             }
-        }};
+        };
     </script>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

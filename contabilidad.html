@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumen General | El Vagón del Café</title>
 
-    <!-- Configuraci\u00f3n personalizada de Tailwind (debe ir ANTES del CDN) -->
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Configuraci\u00f3n personalizada de Tailwind (va DESPU\u00c9S del CDN) -->
     <script>
-        tailwind = { config: {
+        tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
@@ -32,11 +35,8 @@
                     }
                 }
             }
-        }};
+        };
     </script>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
