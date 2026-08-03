@@ -25,38 +25,8 @@
         });
     </script>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Configuración personalizada de Tailwind (va DESPUÉS del CDN para que el objeto tailwind ya exista) -->
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            bg: '#F9F8F4',
-                            card: '#FFFFFF',
-                            dark: '#1E2320',
-                            green: '#1A4331',
-                            gold: '#C5A059',
-                            lightGreen: '#E8F0EC',
-                            border: '#E5E1D8'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                        serif: ['Lora', 'serif'],
-                    },
-                    boxShadow: {
-                        'soft': '0 10px 40px -10px rgba(0,0,0,0.05)',
-                        'hover': '0 20px 40px -10px rgba(26, 67, 49, 0.15)',
-                    }
-                }
-            }
-        };
-    </script>
+    <!-- Tailwind CSS (compilado localmente - sin dependencia del CDN) -->
+    <link rel="stylesheet" href="css/tailwind.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
