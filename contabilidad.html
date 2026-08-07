@@ -602,11 +602,20 @@
                                 <p class="font-bold text-brand-dark dark:text-white text-sm">Venta</p>
                             </div>
                         </label>
-                        <label class="cursor-not-allowed">
+                        <label class="cursor-not-allowed relative group">
                             <input type="radio" name="movimiento" value="Entrega" class="sr-only" disabled>
                             <div class="mov-card-inner p-4 rounded-xl border-2 border-dashed border-gray-200 dark:border-slate-700 text-center opacity-50 select-none pointer-events-none">
                                 <i class="fa-solid fa-truck text-gray-400 text-xl mb-2"></i>
                                 <p class="font-bold text-gray-400 dark:text-gray-500 text-sm">Entrega</p>
+                            </div>
+                            <!-- Ícono de info -->
+                            <div class="absolute -top-2 -right-2 w-5 h-5 bg-brand-gold rounded-full flex items-center justify-center shadow-md z-10">
+                                <i class="fa-solid fa-circle-info text-white text-[10px]"></i>
+                            </div>
+                            <!-- Tooltip flotante -->
+                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-gray-900 dark:bg-slate-700 text-white text-xs rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
+                                <i class="fa-solid fa-circle-info text-brand-gold mr-1"></i> Próximamente disponible
+                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-slate-700"></div>
                             </div>
                         </label>
                     </div>
